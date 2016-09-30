@@ -1,30 +1,27 @@
 package main.java;
 
-import static spark.Spark.*;
+import static spark.Spark.get;
 
-import java.io.*;
-import java.net.*;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
-import org.json.*;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
+import com.mongodb.client.MongoDatabase;
 
 public class Main {
 	
-    public static void main(String[] args) {
-    	port(Integer.valueOf(System.getenv("PORT")));   	
+    @SuppressWarnings("resource")
+	public static void main(String[] args) {
+    	//for running locally, remove this port line
+    	//port(Integer.valueOf(System.getenv("PORT")));
+    	
     	//basic help response to a blank call to the webpage
     	get("/", (request, response) -> 
     	{
-    		return "Invalid Request\nTo search for a movie use: /search/movie/:movieName\nTo request a movie use:/request/movie/:movieId";
+    		MongoClientURI mongoClientURI = new MongoClientURI("mongodb://heroku_s4r2lcpf:mongopassword1@ds035026.mlab.com:35026/heroku_s4r2lcpf");
+    		MongoClient mongoClient = new MongoClient(mongoClientURI);
+    		MongoDatabase db = mongoClient.getDatabase("test");
+    		
+    		System.out.println("Connect to database successfully");
+            return "asds";
 		});
     }
 }

@@ -1,20 +1,11 @@
 package main.java;
 
-import static spark.Spark.get;
-import static spark.SparkBase.port;
+import static spark.Spark.*;
 
-import java.util.Arrays;
-
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
-import com.mongodb.MongoCredential;
-import com.mongodb.ServerAddress;
-import com.mongodb.client.MongoDatabase;
+import services.MongoConnection;
+import services.ProfileService;
 public class Main {
 	
-    @SuppressWarnings("resource")
 	public static void main(String[] args) {
     	//for running locally, remove this port line
     	//port(Integer.valueOf(System.getenv("PORT")));
@@ -22,9 +13,15 @@ public class Main {
     	//basic help response to a blank call to the webpage
     	get("/", (request, response) -> 
     	{
-    		MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://arnoldout111:mongopassword1@ds035026.mlab.com:35026/heroku_s4r2lcpf"));
-    		
+    		MongoConnection mc = new MongoConnection("mongodb://arnoldout111:mongopassword1@ds035026.mlab.com:35026/heroku_s4r2lcpf", "heroku_s4r2lcpf");
+    		ProfileService ps = new ProfileService(mc.getDb());
     		return "asds";
-		});	
+		});
+    	post("/addProfile", (request, response) -> 
+    	{
+    		String s = request.body();
+    		s = s;
+    		return "Hello World: " + request.body();
+    	});
     }
 }

@@ -1,4 +1,4 @@
-package types;
+package com.ie.sw.types;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;

@@ -1,4 +1,4 @@
-package services;
+package com.ie.sw.services;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;

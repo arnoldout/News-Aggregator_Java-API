@@ -1,23 +1,17 @@
-package main.java;
+package com.ie.sw.main;
 
-import static spark.Spark.*;
-
-import java.util.Collection;
-import java.util.List;
+import static spark.Spark.get;
+import static spark.Spark.post;
+import static spark.SparkBase.port;
 
 import org.bson.Document;
 import org.json.JSONException;
 
 import com.google.gson.Gson;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
+import com.ie.sw.services.*;
+import com.ie.sw.types.*;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.util.JSON;
-
-import services.MongoConnection;
-import services.ProfileService;
-import types.Profile;
 public class Main {
 	
 	public static void main(String[] args) {
@@ -36,7 +30,7 @@ public class Main {
     		MongoConnection mc = new MongoConnection("mongodb://arnoldout111:mongopassword1@ds035026.mlab.com:35026/heroku_s4r2lcpf", "heroku_s4r2lcpf");
     		ProfileService ps = new ProfileService(mc.getDb());
     		MongoCollection<Document> col = ps.getCollection("profile");
-    		//make sure json is a valid Pofile JSON object
+    		//make sure JSON is a valid Profile JSON object
     		Document dbo = null;
     		try{
     			Profile p = g.fromJson(request.body(), Profile.class);
@@ -50,7 +44,6 @@ public class Main {
     		FindIterable<Document>docs = col.find();
     		for(Document p : docs)
     		{
-    			Collection<Object> o = p.values();
     			String s = (String) p.get("username");
     			if(s.equals(dbo.get("username")))
     			{

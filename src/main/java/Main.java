@@ -1,7 +1,6 @@
 package main.java;
 
-import static spark.Spark.get;
-import static spark.Spark.post;
+import static spark.Spark.*;
 
 import java.util.Collection;
 import java.util.List;
@@ -23,7 +22,7 @@ public class Main {
 	
 	public static void main(String[] args) {
     	//for running locally, remove this port line
-    	//port(Integer.valueOf(System.getenv("PORT")));
+    	port(Integer.valueOf(System.getenv("PORT")));
     	
     	//basic help response to a blank call to the webpage
     	get("/", (request, response) -> 

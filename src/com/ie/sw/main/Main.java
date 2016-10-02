@@ -36,8 +36,23 @@ public class Main {
     	{
     		String id = request.params(":profileId");
     		MongoCollection<Document> col = ps.getCollection("profile");
-    		Document d = col.find(eq("_id", new ObjectId(id))).first();
-    		return d.toString();
+    		try
+    		{
+    			Document d = col.find(eq("_id", new ObjectId(id))).first();
+    			if(d!=null)
+    			{
+	    			//client shouldn't know the password
+	    			d.remove("password");
+	    			return d;
+    			}
+    			return "false";
+    			
+    		}
+    		catch(IllegalArgumentException e)
+    		{
+    			return "false";
+    		}
+    		
 		});
     	post("/addProfile", (request, response) -> 
     	{
@@ -67,6 +82,12 @@ public class Main {
     		}
     		col.insertOne(dbo);
     		return dbo.get("_id").toString();
+    	});
+
+    	post("/changePassword", (request, response) -> 
+    	{
+    		request.body();
+			return "";
     	});
     }
 }

@@ -1,34 +1,63 @@
 package com.ie.sw.main;
 
+import static com.mongodb.client.model.Filters.*;
+
 import static spark.Spark.get;
 import static spark.Spark.post;
 import static spark.SparkBase.port;
 
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.json.JSONException;
 
 import com.google.gson.Gson;
 import com.ie.sw.services.*;
 import com.ie.sw.types.*;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 public class Main {
 	
 	public static void main(String[] args) {
     	//for running locally, remove this port line
-    	port(Integer.valueOf(System.getenv("PORT")));
+    	//port(Integer.valueOf(System.getenv("PORT")));
+    	
+    	MongoConnection mc = new MongoConnection("mongodb://arnoldout111:mongopassword1@ds035026.mlab.com:35026/heroku_s4r2lcpf", "heroku_s4r2lcpf");
+		ProfileService ps = new ProfileService(mc.getDb());
     	
     	//basic help response to a blank call to the webpage
     	get("/", (request, response) -> 
     	{
-    		return "asds";
+    		return "null";
+		});
+    	get("/getProfile/:profileId", (request, response) -> 
+    	{
+    		String id = request.params(":profileId");
+    		MongoCollection<Document> col = ps.getCollection("profile");
+    		try
+    		{
+    			Document d = col.find(eq("_id", new ObjectId(id))).first();
+    			if(d!=null)
+    			{
+	    			//client shouldn't know the password
+	    			d.remove("password");
+	    			return d;
+    			}
+    			return "false";
+    		}
+    		catch(IllegalArgumentException e)
+    		{
+    			//invalid Objectid
+    			return "false";
+    		}
+    		
 		});
     	post("/addProfile", (request, response) -> 
     	{
     		Gson g = new Gson();
     		
-    		MongoConnection mc = new MongoConnection("mongodb://arnoldout111:mongopassword1@ds035026.mlab.com:35026/heroku_s4r2lcpf", "heroku_s4r2lcpf");
-    		ProfileService ps = new ProfileService(mc.getDb());
     		MongoCollection<Document> col = ps.getCollection("profile");
     		//make sure JSON is a valid Profile JSON object
     		Document dbo = null;
@@ -52,7 +81,13 @@ public class Main {
     			}
     		}
     		col.insertOne(dbo);
-    		return dbo.get("id").toString();
+    		return dbo.get("_id").toString();
+    	});
+
+    	post("/changePassword", (request, response) -> 
+    	{
+    		request.body();
+			return "";
     	});
     }
 }

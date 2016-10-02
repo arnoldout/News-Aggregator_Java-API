@@ -24,7 +24,7 @@ public class Profile {
 		//if adding more fields, this needs to also be edited
 		d.append("username", username);
 		d.append("password", password);
-		d.append("id", id);
+		d.append("_id", id);
 		return d;
 	}
 	public String getUsername() {

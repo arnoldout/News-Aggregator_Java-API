@@ -22,7 +22,7 @@ public class Main {
 	
 	public static void main(String[] args) {
     	//for running locally, remove this port line
-    	port(Integer.valueOf(System.getenv("PORT")));
+    	//port(Integer.valueOf(System.getenv("PORT")));
     	
     	MongoConnection mc = new MongoConnection("mongodb://arnoldout111:mongopassword1@ds035026.mlab.com:35026/heroku_s4r2lcpf", "heroku_s4r2lcpf");
 		ProfileService ps = new ProfileService(mc.getDb());
@@ -35,7 +35,7 @@ public class Main {
     	get("/getProfile/:profileId", (request, response) -> 
     	{
     		String id = request.params(":profileId");
-    		MongoCollection<Document> col = ps.getCollection("profile");
+    		MongoCollection<Document> col = ps.getCollection("tony");
     		try
     		{
     			Document d = col.find(eq("_id", new ObjectId(id))).first();
@@ -54,6 +54,38 @@ public class Main {
     		}
     		
 		});
+    	post("/login", (request, response) -> 
+    	{
+    		Gson g = new Gson();
+    		
+    		MongoCollection<Document> col = ps.getCollection("profile");
+    		//make sure JSON is a valid Profile JSON object
+    		Document dbo = null;
+    		try{
+    			Profile p = g.fromJson(request.body(), Profile.class);
+    			dbo = p.makeDocument();
+    		}
+    		catch(JSONException e)
+    		{
+    			response.status(406);
+    			return response;
+    		}
+    		FindIterable<Document>docs = col.find();
+    		for(Document p : docs)
+    		{
+    			String nme = (String) p.get("username");
+    			String pwd = (String) p.get("password");
+    			if(nme.equals(dbo.get("username"))&&pwd.equals(dbo.get("password")))
+    			{
+    				//valid user account
+    				return p.get("_id").toString();
+    			}
+    			//invalid account
+    			return false;
+    		}
+    		
+    		return "";
+    	});
     	post("/addProfile", (request, response) -> 
     	{
     		Gson g = new Gson();

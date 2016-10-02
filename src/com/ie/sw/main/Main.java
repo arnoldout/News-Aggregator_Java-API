@@ -54,6 +54,38 @@ public class Main {
     		}
     		
 		});
+    	post("/login", (request, response) -> 
+    	{
+    		Gson g = new Gson();
+    		
+    		MongoCollection<Document> col = ps.getCollection("profile");
+    		//make sure JSON is a valid Profile JSON object
+    		Document dbo = null;
+    		try{
+    			Profile p = g.fromJson(request.body(), Profile.class);
+    			dbo = p.makeDocument();
+    		}
+    		catch(JSONException e)
+    		{
+    			response.status(406);
+    			return response;
+    		}
+    		FindIterable<Document>docs = col.find();
+    		for(Document p : docs)
+    		{
+    			String nme = (String) p.get("username");
+    			String pwd = (String) p.get("password");
+    			if(nme.equals(dbo.get("username"))&&pwd.equals(dbo.get("password")))
+    			{
+    				//valid user account
+    				return p.get("_id").toString();
+    			}
+    			//invalid account
+    			return false;
+    		}
+    		
+    		return "";
+    	});
     	post("/addProfile", (request, response) -> 
     	{
     		Gson g = new Gson();

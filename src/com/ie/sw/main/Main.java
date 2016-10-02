@@ -7,12 +7,14 @@ import static spark.Spark.post;
 import static spark.SparkBase.port;
 
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.json.JSONException;
 
 import com.google.gson.Gson;
 import com.ie.sw.services.*;
 import com.ie.sw.types.*;
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
@@ -34,7 +36,7 @@ public class Main {
     	{
     		String id = request.params(":profileId");
     		MongoCollection<Document> col = ps.getCollection("profile");
-    		Document d = col.find(eq("_id", id)).first();
+    		Document d = col.find(eq("_id", new ObjectId(id))).first();
     		return d.toString();
 		});
     	post("/addProfile", (request, response) -> 
@@ -64,7 +66,7 @@ public class Main {
     			}
     		}
     		col.insertOne(dbo);
-    		return dbo.get("id").toString();
+    		return dbo.get("_id").toString();
     	});
     }
 }

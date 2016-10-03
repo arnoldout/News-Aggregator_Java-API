@@ -19,13 +19,13 @@ import com.mongodb.DBObject;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 public class Main {
+	public static MongoConnection mc = new MongoConnection("mongodb://arnoldout111:mongopassword1@ds035026.mlab.com:35026/heroku_s4r2lcpf", "heroku_s4r2lcpf");
+	public static ProfileService ps = new ProfileService(mc.getDb());
 	
 	public static void main(String[] args) {
     	//for running locally, remove this port line
-    	//port(Integer.valueOf(System.getenv("PORT")));
+    	port(Integer.valueOf(System.getenv("PORT")));
     	
-    	MongoConnection mc = new MongoConnection("mongodb://arnoldout111:mongopassword1@ds035026.mlab.com:35026/heroku_s4r2lcpf", "heroku_s4r2lcpf");
-		ProfileService ps = new ProfileService(mc.getDb());
     	
     	//basic help response to a blank call to the webpage
     	get("/", (request, response) -> 

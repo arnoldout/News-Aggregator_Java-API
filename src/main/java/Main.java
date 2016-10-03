@@ -1,4 +1,4 @@
-package com.ie.sw.main;
+package main.java;
 
 import static com.mongodb.client.model.Filters.*;
 
@@ -18,6 +18,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
+
 public class Main {
 	
 	public static void main(String[] args) {

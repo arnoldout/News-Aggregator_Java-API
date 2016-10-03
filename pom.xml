@@ -29,6 +29,11 @@
 			<version>2.7</version>
 		</dependency>
 		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>9.4-1201-jdbc4</version>
+		</dependency>
+		<dependency>
 			<groupId>com.heroku.sdk</groupId>
 			<artifactId>heroku-jdbc</artifactId>
 			<version>0.1.1</version>
@@ -76,7 +81,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>com.ie.sw.main.Main</mainClass>
+							<mainClass>main.java.Main</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>

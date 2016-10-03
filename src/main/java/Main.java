@@ -11,13 +11,14 @@ import org.bson.types.ObjectId;
 import org.json.JSONException;
 
 import com.google.gson.Gson;
-import com.ie.sw.services.MongoConnection;
-import com.ie.sw.services.ProfileService;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
+
+import main.ie.services.MongoConnection;
+import main.ie.services.ProfileService;
 
 public class Main {
 	

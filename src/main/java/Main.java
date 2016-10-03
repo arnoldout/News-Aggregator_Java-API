@@ -11,8 +11,6 @@ import org.bson.types.ObjectId;
 import org.json.JSONException;
 
 import com.google.gson.Gson;
-import com.ie.sw.services.*;
-import com.ie.sw.types.*;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;

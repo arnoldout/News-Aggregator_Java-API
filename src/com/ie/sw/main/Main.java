@@ -22,7 +22,7 @@ public class Main {
 	
 	public static void main(String[] args) {
     	//for running locally, remove this port line
-@SuppressWarnings("unused")
+    		port(Integer.valueOf(System.getenv("PORT")));
     	
     	//basic help response to a blank call to the webpage
     	get("/", (request, response) -> 

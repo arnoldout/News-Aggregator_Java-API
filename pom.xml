@@ -76,7 +76,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>com.ie.sw.Main</mainClass>
+							<mainClass>com.ie.sw.main.Main</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>

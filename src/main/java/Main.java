@@ -1,4 +1,4 @@
-package com.ie.sw.main;
+package main.java;
 
 import static com.mongodb.client.model.Filters.*;
 
@@ -11,13 +11,16 @@ import org.bson.types.ObjectId;
 import org.json.JSONException;
 
 import com.google.gson.Gson;
-import com.ie.sw.services.*;
-import com.ie.sw.types.*;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
+
+import main.java.services.MongoConnection;
+import main.java.services.ProfileService;
+import main.java.types.Profile;
+
 public class Main {
 	
 	public static void main(String[] args) {
@@ -32,6 +35,7 @@ public class Main {
     	{
     		return "null";
 		});
+    	
     	get("/getProfile/:profileId", (request, response) -> 
     	{
     		String id = request.params(":profileId");
@@ -121,7 +125,7 @@ public class Main {
     		request.body();
 			return "";
     	});
-    }
+	}
 }
 
 

@@ -1,4 +1,4 @@
-package com.ie.sw.services;
+package main.java.services;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;

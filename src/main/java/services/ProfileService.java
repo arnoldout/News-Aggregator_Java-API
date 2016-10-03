@@ -1,4 +1,4 @@
-package main.ie.services;
+package main.java.services;
 
 import org.bson.Document;
 

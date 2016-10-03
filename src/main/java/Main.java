@@ -17,14 +17,14 @@ import com.mongodb.DBObject;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 
-import main.ie.services.MongoConnection;
-import main.ie.services.ProfileService;
+import main.java.services.MongoConnection;
+import main.java.services.ProfileService;
 
 public class Main {
 	
 	public static void main(String[] args) {
     	//for running locally, remove this port line
-    	port(Integer.valueOf(System.getenv("PORT")));
+    	//port(Integer.valueOf(System.getenv("PORT")));
     	
     	MongoConnection mc = new MongoConnection("mongodb://arnoldout111:mongopassword1@ds035026.mlab.com:35026/heroku_s4r2lcpf", "heroku_s4r2lcpf");
 		ProfileService ps = new ProfileService(mc.getDb());

@@ -1,4 +1,4 @@
-package main.ie.types;
+package main.java.types;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;

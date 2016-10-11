@@ -1,19 +1,19 @@
 package main.java;
 
-import static com.mongodb.client.model.Filters.*;
-
+import static com.mongodb.client.model.Filters.eq;
 import static spark.Spark.get;
 import static spark.Spark.post;
 import static spark.SparkBase.port;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.eclipse.jetty.util.thread.TimerScheduler;
 import org.json.JSONException;
 
 import com.google.gson.Gson;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 
@@ -26,6 +26,18 @@ public class Main {
 	public static void main(String[] args) {
     	//for running locally, remove this port line
     	port(Integer.valueOf(System.getenv("PORT")));
+    	
+    	Timer timer = new Timer();
+    	TimerTask task = new TimerTask() {
+			@Override
+			public void run() {
+				
+				System.out.println("Boop");
+			}
+		};
+		timer.schedule(task, 0l, 7000);
+		
+    	
     	
     	MongoConnection mc = new MongoConnection("mongodb://arnoldout111:mongopassword1@ds035026.mlab.com:35026/heroku_s4r2lcpf", "heroku_s4r2lcpf");
 		ProfileService ps = new ProfileService(mc.getDb());

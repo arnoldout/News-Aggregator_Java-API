@@ -3,9 +3,8 @@ package main.java;
 import static com.mongodb.client.model.Filters.eq;
 import static spark.Spark.get;
 import static spark.Spark.post;
+import static spark.Spark.*;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
@@ -33,7 +32,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		// for running locally, remove this port line
-		// port(Integer.valueOf(System.getenv("PORT")));
+		port(Integer.valueOf(System.getenv("PORT")));
 
 		FrequentlyUsedWords fuw = new FrequentlyUsedWords();
 		fuw.generateWords();

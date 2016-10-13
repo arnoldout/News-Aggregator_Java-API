@@ -1,0 +1,28 @@
+package main.java.types;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.*;
+
+public class NewsFactory {
+	public List<XMLDoc> docs = new ArrayList<XMLDoc>(Arrays.asList(new NYTDoc(), new PolygonDoc(), new BBCDoc()));
+	
+	public void getDocs()
+    {
+		//docs size wont ever be massive, it will only ever be the amount of supported sites
+		ExecutorService executor = Executors.newFixedThreadPool(docs.size());
+        
+		for(XMLDoc d : docs)
+        {
+            executor.submit(() -> {d.parseXml();});
+        }
+		executor.shutdown();
+		try {
+			executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+		} catch (InterruptedException e) {
+			System.out.println("Thread Broken");
+		}
+        	
+    }
+}

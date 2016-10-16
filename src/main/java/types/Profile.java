@@ -1,5 +1,8 @@
 package main.java.types;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
@@ -7,6 +10,7 @@ public class Profile {
 	private ObjectId id;
 	private String username;
 	private String password;
+	private List<TagViewPair> likes = new ArrayList<TagViewPair>();
 
 	public Profile(String username, String password) {
 		super();
@@ -25,6 +29,7 @@ public class Profile {
 		d.append("username", username);
 		d.append("password", password);
 		d.append("_id", id);
+		d.append("likes", likes);
 		return d;
 	}
 	public String getUsername() {
@@ -38,5 +43,16 @@ public class Profile {
 	}
 	public void setPassword(String password) {
 		this.password = password;
+	}
+	public void incrementTag(String tagName)
+	{
+		for(TagViewPair tvp : likes)
+		{
+			if(tvp.getTag().equals(tagName)){
+				tvp.incrementViewCount();
+				return;
+			}
+		}
+		likes.add(new TagViewPair(tagName, 1));
 	}
 }

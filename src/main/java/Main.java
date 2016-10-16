@@ -37,7 +37,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		// for running locally, remove this port line
-		port(Integer.valueOf(System.getenv("PORT")));
+		//sport(Integer.valueOf(System.getenv("PORT")));
 
 		MongoConnection mc = new MongoConnection(
 				"mongodb://arnoldout111:mongopassword1@ds035026.mlab.com:35026/heroku_s4r2lcpf", "heroku_s4r2lcpf");
@@ -127,6 +127,19 @@ public class Main {
 		get("/", (request, response) -> {
 			return "null";
 		});
+		get("/addLike/:id/:like", (request, response) -> {
+			String id = request.params(":id");
+			String like = request.params(":like");
+			try{
+				Profile p = ps.getProfile(new ObjectId(id));
+				ps.addLikeCount(p.getUsername(), like);
+			}
+			catch(Exception e)
+			{
+				return "Invalid Id";
+			}
+			return "";
+		});
 
 		get("/getProfile/:profileId", (request, response) -> {
 			String id = request.params(":profileId");
@@ -179,8 +192,7 @@ public class Main {
 			// make sure JSON is a valid Profile JSON object
 			Document dbo = null;
 			try {
-				Profile p = g.fromJson(request.body(), Profile.class);
-				dbo = p.makeDocument();
+				dbo = g.fromJson(request.body(), Profile.class).makeDocument();
 			} catch (JSONException e) {
 				response.status(406);
 				return response;

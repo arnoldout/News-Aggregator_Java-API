@@ -4,6 +4,8 @@ import static com.mongodb.client.model.Filters.eq;
 import static spark.Spark.get;
 import static spark.Spark.post;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Timer;
@@ -44,6 +46,38 @@ public class Main {
 		FrequentlyUsedWords fuw = new FrequentlyUsedWords();
 		fuw.generateWords();
 
+		Timer mongoGarbageCol = new Timer();
+		TimerTask mGC = new TimerTask() {
+			@Override
+			public void run() {
+				Gson g = new Gson();
+				ArticleService as = new ArticleService(mc);
+				MongoCollection articles = as.getCollection("Article");
+				MongoCollection tags = as.getCollection("ArticleTag");
+				FindIterable<Document> docs = articles.find();
+				for (Document d : docs) {
+					Calendar now = Calendar.getInstance();
+					Long l = (Long) d.get("dateTime");
+					Date docDate = new Date(l);
+					Calendar docTime = Calendar.getInstance();
+					docTime.setTime(docDate);
+					docTime.add(Calendar.HOUR_OF_DAY, 12);
+					if(docTime.before(now))
+					{
+						//remove Article
+						Story st = g.fromJson(d.toJson(), Story.class);
+						as.removeArticle(st);
+					}
+					else {
+						//leave article
+						System.out.println("af");
+					}
+				}
+			}
+		};
+		//start in half an hour, run every 12 hours
+		mongoGarbageCol.schedule(mGC,  01, 1000 * 60 * 60);
+
 		Timer timer = new Timer();
 		TimerTask task = new TimerTask() {
 			@Override
@@ -60,6 +94,7 @@ public class Main {
 				nf.getDocs();
 				long startTime = System.currentTimeMillis() % 1000;
 				ExecutorService executor = Executors.newFixedThreadPool(70);
+				TaggingFactory tf = new TaggingFactory(mc);
 				for (XMLDoc d : nf.docs) {
 					for (Story s : d.getNewsItems()) {
 						HTMLDoc doc = new HTMLDoc();
@@ -68,6 +103,7 @@ public class Main {
 							executor.submit(() -> {
 								s.setCategories(doc.parseText(fuw.getFreqWords()));
 								storyCol.add(s);
+								tf.generateTags(s);
 							});
 						}
 					}
@@ -78,14 +114,6 @@ public class Main {
 				} catch (InterruptedException e) {
 					System.out.println("Thread Broken");
 				}
-				System.out.println("End of parsing");
-				TaggingFactory tf = new TaggingFactory(mc);
-				for(Story s:storyCol)
-				{
-					if(s!=null){
-						tf.generateTags(s);
-					}
-				}
 				//TaggingFactory.generateTags(st, mc);
 				long endTime = System.currentTimeMillis() % 1000;
 				System.out.println(endTime - startTime);
@@ -93,7 +121,7 @@ public class Main {
 				System.out.println("done");
 			}
 		};
-		timer.schedule(task, 0l, 1000 * 60 * 60);
+		timer.schedule(task, 1000 * 60 * 60, 1000 * 60 * 60);
 
 		// basic help response to a blank call to the webpage
 		get("/", (request, response) -> {

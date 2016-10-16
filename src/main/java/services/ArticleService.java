@@ -2,7 +2,10 @@ package main.java.services;
 
 import static com.mongodb.client.model.Filters.eq;
 
+import java.util.List;
+
 import org.bson.Document;
+import org.bson.types.ObjectId;
 
 import com.mongodb.client.MongoCollection;
 
@@ -41,6 +44,27 @@ private MongoCollection<Document> col;
 		d.put("description", story.getDescription());
 		d.put("title", story.getTitle());
 		d.put("uri", story.getUri());
+		d.put("dateTime", story.getLdt());
 		return d;
+	}
+	public void removeArticle(Story story)
+	{
+		MongoCollection<Document> tagsCol = super.getCollection("ArticleTag");
+		try{
+			for(String s:story.getCategories())
+			{
+				Document d = (Document) tagsCol.find(eq("name", s)).first();
+				@SuppressWarnings("unchecked")
+				List<ObjectId> li = (List<ObjectId>) d.get("articles");
+				li.remove(story.get_id());
+				d.replace("articles", li);
+				tagsCol.replaceOne(eq("name", s), d);
+			}
+			col.deleteOne(eq("_id", story.get_id()));
+		}
+		catch(NullPointerException e)
+		{
+			//no assigned categories
+		}
 	}
 }

@@ -1,6 +1,7 @@
 package main.java.types;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -11,11 +12,13 @@ public class Story {
     private String description;
     private String uri;
     private List<String> categories = new ArrayList<String>();
-    
+    private long ldt;
     public Story(String uri) {
 		super();
 		this.uri = uri;
 		this._id = new ObjectId();
+		Calendar c = Calendar.getInstance();
+		this.setLdt(c.getTime().getTime());
 	} 
     public String getTitle() {
 		return title;
@@ -43,6 +46,12 @@ public class Story {
 	}
 	public void setCategories(List<String> categories) {
 		this.categories = categories;
+	}
+	public long getLdt() {
+		return ldt;
+	}
+	public void setLdt(long ldt) {
+		this.ldt = ldt;
 	}
 
 }

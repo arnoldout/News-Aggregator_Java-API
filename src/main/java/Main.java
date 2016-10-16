@@ -52,8 +52,8 @@ public class Main {
 			public void run() {
 				Gson g = new Gson();
 				ArticleService as = new ArticleService(mc);
-				MongoCollection articles = as.getCollection("Article");
-				MongoCollection tags = as.getCollection("ArticleTag");
+				MongoCollection <Document> articles = as.getCollection("Article");
+				MongoCollection <Document> tags = as.getCollection("ArticleTag");
 				FindIterable<Document> docs = articles.find();
 				for (Document d : docs) {
 					Calendar now = Calendar.getInstance();

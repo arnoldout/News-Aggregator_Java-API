@@ -2,7 +2,7 @@ package main.java;
 
 import static com.mongodb.client.model.Filters.eq;
 import static spark.Spark.get;
-import static spark.Spark.post;
+import static spark.Spark.*;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -37,7 +37,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		// for running locally, remove this port line
-		// port(Integer.valueOf(System.getenv("PORT")));
+		port(Integer.valueOf(System.getenv("PORT")));
 
 		MongoConnection mc = new MongoConnection(
 				"mongodb://arnoldout111:mongopassword1@ds035026.mlab.com:35026/heroku_s4r2lcpf", "heroku_s4r2lcpf");
@@ -76,7 +76,7 @@ public class Main {
 			}
 		};
 		//start in half an hour, run every 12 hours
-		mongoGarbageCol.schedule(mGC,  01, 1000 * 60 * 60);
+		mongoGarbageCol.schedule(mGC,  1000 * 60 * 30, 1000 * 60 * 60 * 12);
 
 		Timer timer = new Timer();
 		TimerTask task = new TimerTask() {
@@ -121,7 +121,7 @@ public class Main {
 				System.out.println("done");
 			}
 		};
-		timer.schedule(task, 1000 * 60 * 60, 1000 * 60 * 60);
+		timer.schedule(task, 01, 1000 * 60 * 60);
 
 		// basic help response to a blank call to the webpage
 		get("/", (request, response) -> {

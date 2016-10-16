@@ -1,13 +1,22 @@
 package main.java.types;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.bson.types.ObjectId;
 
 public class Story {
-    private String title;
+	private ObjectId _id;
+	private String title;
     private String description;
     private String uri;
     private List<String> categories = new ArrayList<String>();
     
+    public Story(String uri) {
+		super();
+		this.uri = uri;
+		this._id = new ObjectId();
+	} 
     public String getTitle() {
 		return title;
 	}
@@ -28,6 +37,9 @@ public class Story {
 	}
 	public List<String> getCategories() {
 		return categories;
+	}
+	public ObjectId get_id() {
+		return _id;
 	}
 	public void setCategories(List<String> categories) {
 		this.categories = categories;

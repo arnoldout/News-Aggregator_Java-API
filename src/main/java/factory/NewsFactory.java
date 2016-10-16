@@ -1,9 +1,17 @@
-package main.java.types;
+package main.java.factory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+import main.java.types.BBCDoc;
+import main.java.types.NYTDoc;
+import main.java.types.PolygonDoc;
+import main.java.types.XMLDoc;
 
 public class NewsFactory {
 	public List<XMLDoc> docs = new ArrayList<XMLDoc>(Arrays.asList(new NYTDoc(), new PolygonDoc(), new BBCDoc()));

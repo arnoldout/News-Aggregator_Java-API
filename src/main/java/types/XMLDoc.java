@@ -16,7 +16,7 @@ import org.w3c.dom.NodeList;
 public abstract class XMLDoc {
 	private List<Story> newsItems = new ArrayList<Story>();
 
-	protected abstract void parseXml();
+	public abstract void parseXml();
 
 	public Document getXML(String url) {
 		try{

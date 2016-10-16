@@ -16,11 +16,10 @@ public class NYTDoc extends XMLDoc {
 		NodeList nList = xmlReader.getElementsByTagName("item");
 
 		for (int temp = 0; temp < nList.getLength(); temp++) {
-			Story item = new Story();
 			Node nNode = nList.item(temp);
 			Element eElement = (Element) nNode;
+			Story item = new Story(eElement.getElementsByTagName("guid").item(0).getTextContent());
 			item.setTitle(eElement.getElementsByTagName("title").item(0).getTextContent());
-			item.setUri(eElement.getElementsByTagName("guid").item(0).getTextContent());
 			item.setDescription(eElement.getElementsByTagName("description").item(0).getTextContent());
 			super.add(item);
 		}

@@ -5,9 +5,9 @@ import org.bson.types.ObjectId;
 public class TagViewPair {
 
 	private String tag;
-	private Integer viewCount;
+	private int viewCount;
 
-	public TagViewPair(String tag, Integer viewCount) {
+	public TagViewPair(String tag, int viewCount) {
 		super();
 		this.tag = tag;
 		this.viewCount = viewCount;
@@ -18,7 +18,7 @@ public class TagViewPair {
 	public Integer getViewCount() {
 		return viewCount;
 	}
-	public void setViewCount(Integer viewCount) {
+	public void setViewCount(int viewCount) {
 		this.viewCount = viewCount;
 	}
 	public void incrementViewCount()

@@ -2,6 +2,7 @@ package main.java.services;
 
 import static com.mongodb.client.model.Filters.eq;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bson.Document;
@@ -9,6 +10,7 @@ import org.bson.types.ObjectId;
 
 import com.mongodb.client.MongoCollection;
 
+import main.java.types.Profile;
 import main.java.types.Story;
 
 public class ArticleService extends MongoService{
@@ -21,15 +23,19 @@ private MongoCollection<Document> col;
 	}
 	public Boolean checkFor(String tagName)
 	{
-		if(getDocument(tagName)==null)
+		if(getMongoDocument(tagName)==null)
 		{
 			return false;
 		}
 		return true;
 	}
-	public Document getDocument(String tagName)
+	public Document getMongoDocument(String tagName)
 	{
 		return col.find(eq("name", tagName)).first();
+	}
+	public Document getMongoDocument(ObjectId id)
+	{
+		return col.find(eq("_id", id)).first();
 	}
 	public void addArticle(Story story)
 	{

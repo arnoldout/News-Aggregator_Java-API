@@ -2,11 +2,12 @@ package main.java;
 
 import static com.mongodb.client.model.Filters.eq;
 import static spark.Spark.get;
-import static spark.Spark.*;
+import static spark.Spark.post;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -126,6 +127,17 @@ public class Main {
 		// basic help response to a blank call to the webpage
 		get("/", (request, response) -> {
 			return "null";
+		});
+		get("/getArticles/:id", (request, response) -> {
+			String id = request.params(":id");
+			TaggingFactory tf = new TaggingFactory(mc);
+			try{
+				return tf.getPreferredArticles(ps.getProfile(new ObjectId(id)));
+			}
+			catch(Exception e)
+			{
+				return "Invalid id";
+			}
 		});
 		get("/addLike/:id/:like", (request, response) -> {
 			String id = request.params(":id");

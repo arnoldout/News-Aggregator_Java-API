@@ -11,25 +11,26 @@ import com.mongodb.client.MongoCollection;
 import main.java.types.Profile;
 
 public class ProfileService extends MongoService {
-	
+	private MongoCollection<Document> col;
 	public ProfileService(MongoConnection db) {
 		super();
 		super.setDb(db.getDb());
+		col = super.getCollection("profile");
 	}
 	public Profile getProfile(ObjectId id)
 	{
-		MongoCollection<Document> col = super.getCollection("profile");
-		Document d = (Document) col.find(eq("_id", id));
+		Document d = (Document) col.find(eq("_id", id)).first();
 		Gson g = new Gson();
 		return g.fromJson(d.toJson(), Profile.class);
 	}
+	
 	public void addLikeCount(String usrName, String tagName)
 	{
 		Gson g = new Gson();
-		MongoCollection<Document> col = super.getCollection("profile");
-		Document d = (Document) col.find(eq("username", usrName));
+		Document d = (Document) col.find(eq("username", usrName)).first();
 		Profile usr = g.fromJson(d.toJson(), Profile.class);
 		usr.incrementTag(tagName);
-		col.replaceOne(eq("username", usrName), usr.makeDocument());
+		Document dd = usr.makeDocument();
+		col.replaceOne(eq("_id", usr.getId()), dd);
 	}
 }

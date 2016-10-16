@@ -6,6 +6,8 @@ import java.util.List;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
+import com.mongodb.BasicDBList;
+
 public class Profile {
 	private ObjectId id;
 	private String username;
@@ -22,6 +24,14 @@ public class Profile {
 		super();
 		id = new ObjectId();
 	}
+	public ObjectId getId()
+	{
+		return this.id;
+	}
+	public List<TagViewPair> getLikes()
+	{
+		return likes;
+	}
 	public Document makeDocument()
 	{
 		Document d = new Document();
@@ -29,7 +39,12 @@ public class Profile {
 		d.append("username", username);
 		d.append("password", password);
 		d.append("_id", id);
-		d.append("likes", likes);
+		BasicDBList list = new BasicDBList();
+		for(TagViewPair tvp : likes)
+		{			
+			list.put(tvp.getViewCount(), tvp.getTag());
+		}
+		d.append("likes", list);
 		return d;
 	}
 	public String getUsername() {

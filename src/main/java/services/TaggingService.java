@@ -1,10 +1,14 @@
 package main.java.services;
 
 import static com.mongodb.client.model.Filters.eq;
+
 import java.util.List;
+
 import org.bson.Document;
 import org.bson.types.ObjectId;
+
 import com.mongodb.client.MongoCollection;
+
 import main.java.types.ArticleTag;
 import main.java.types.Story;
 
@@ -16,6 +20,9 @@ public class TaggingService extends MongoService {
 		super.setDb(mc.getDb());
 		col = super.getCollection("ArticleTag");
 	} 	
+	public MongoCollection<Document> getCol(){
+		return col;
+	}
 	public Boolean checkForTag(String tagName)
 	{
 		if(getDocument(tagName)==null)
@@ -55,4 +62,5 @@ public class TaggingService extends MongoService {
 		d.put("name", tag.getName());
 		return d;
 	}
+
 }

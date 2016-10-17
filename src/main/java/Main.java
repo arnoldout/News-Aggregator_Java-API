@@ -26,6 +26,7 @@ import com.mongodb.client.MongoCollection;
 import main.java.factory.NewsFactory;
 import main.java.factory.TaggingFactory;
 import main.java.services.ArticleService;
+import main.java.services.GsonWrapper;
 import main.java.services.MongoConnection;
 import main.java.services.ProfileService;
 import main.java.types.FrequentlyUsedWords;
@@ -38,7 +39,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		// for running locally, remove this port line
-		//sport(Integer.valueOf(System.getenv("PORT")));
+		// sport(Integer.valueOf(System.getenv("PORT")));
 
 		MongoConnection mc = new MongoConnection(
 				"mongodb://arnoldout111:mongopassword1@ds035026.mlab.com:35026/heroku_s4r2lcpf", "heroku_s4r2lcpf");
@@ -51,10 +52,11 @@ public class Main {
 		TimerTask mGC = new TimerTask() {
 			@Override
 			public void run() {
-				Gson g = new Gson();
+				GsonWrapper gw = new GsonWrapper();
+				Gson g = gw.getGson();
 				ArticleService as = new ArticleService(mc);
-				MongoCollection <Document> articles = as.getCollection("Article");
-				MongoCollection <Document> tags = as.getCollection("ArticleTag");
+				MongoCollection<Document> articles = as.getCollection("Article");
+				MongoCollection<Document> tags = as.getCollection("ArticleTag");
 				FindIterable<Document> docs = articles.find();
 				for (Document d : docs) {
 					Calendar now = Calendar.getInstance();
@@ -63,28 +65,26 @@ public class Main {
 					Calendar docTime = Calendar.getInstance();
 					docTime.setTime(docDate);
 					docTime.add(Calendar.HOUR_OF_DAY, 12);
-					if(docTime.before(now))
-					{
-						//remove Article
+					if (docTime.before(now)) {
+						// remove Article
 						Story st = g.fromJson(d.toJson(), Story.class);
 						as.removeArticle(st);
-					}
-					else {
-						//leave article
+					} else {
+						// leave article
 						System.out.println("af");
 					}
 				}
 			}
 		};
-		//start in half an hour, run every 12 hours
-		mongoGarbageCol.schedule(mGC,  1000 * 60 * 30, 1000 * 60 * 60 * 12);
+		// start in half an hour, run every 12 hours
+		mongoGarbageCol.schedule(mGC, 1000 * 60 * 30, 1000 * 60 * 60 * 12);
 
 		Timer timer = new Timer();
 		TimerTask task = new TimerTask() {
 			@Override
 			public void run() {
 				Set<String> articles = new HashSet<String>();
- 				ArticleService as = new ArticleService(mc);
+				ArticleService as = new ArticleService(mc);
 				MongoCollection col = as.getCollection("Article");
 				FindIterable<Document> docs = col.find();
 				for (Document d : docs) {
@@ -100,7 +100,7 @@ public class Main {
 					for (Story s : d.getNewsItems()) {
 						HTMLDoc doc = new HTMLDoc();
 						doc.url = s.getUri();
-						if(!(articles.contains(doc.url))){
+						if (!(articles.contains(doc.url))) {
 							executor.submit(() -> {
 								s.setCategories(doc.parseText(fuw.getFreqWords()));
 								storyCol.add(s);
@@ -115,7 +115,7 @@ public class Main {
 				} catch (InterruptedException e) {
 					System.out.println("Thread Broken");
 				}
-				//TaggingFactory.generateTags(st, mc);
+				// TaggingFactory.generateTags(st, mc);
 				long endTime = System.currentTimeMillis() % 1000;
 				System.out.println(endTime - startTime);
 				// all stories now categorized each hour with top three tags
@@ -131,25 +131,16 @@ public class Main {
 		get("/getArticles/:id", (request, response) -> {
 			String id = request.params(":id");
 			TaggingFactory tf = new TaggingFactory(mc);
-			try{
+			try {
 				return tf.getPreferredArticles(ps.getProfile(new ObjectId(id)));
-			}
-			catch(Exception e)
-			{
+			} catch (Exception e) {
 				return "Invalid id";
 			}
 		});
 		get("/addLike/:id/:like", (request, response) -> {
 			String id = request.params(":id");
 			String like = request.params(":like");
-			try{
-				Profile p = ps.getProfile(new ObjectId(id));
-				ps.addLikeCount(p.getUsername(), like);
-			}
-			catch(Exception e)
-			{
-				return "Invalid Id";
-			}
+			ps.incrementTag(like, new ObjectId(id));
 			return "";
 		});
 
@@ -171,7 +162,8 @@ public class Main {
 
 		});
 		post("/login", (request, response) -> {
-			Gson g = new Gson();
+			GsonWrapper gw = new GsonWrapper();
+			Gson g = gw.getGson();
 
 			MongoCollection<Document> col = ps.getCollection("profile");
 			// make sure JSON is a valid Profile JSON object
@@ -198,7 +190,8 @@ public class Main {
 			return "";
 		});
 		post("/addProfile", (request, response) -> {
-			Gson g = new Gson();
+			GsonWrapper gw = new GsonWrapper();
+			Gson g = gw.getGson();
 
 			MongoCollection<Document> col = ps.getCollection("profile");
 			// make sure JSON is a valid Profile JSON object

@@ -9,10 +9,11 @@ import org.bson.types.ObjectId;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
+import com.google.gson.Gson;
+import com.mongodb.client.MongoCollection;
 
 import main.java.services.ArticleService;
+import main.java.services.GsonWrapper;
 import main.java.services.MongoConnection;
 import main.java.services.TaggingService;
 import main.java.types.Profile;
@@ -23,9 +24,10 @@ public class TaggingFactory {
 
 	private TaggingService ts;
 	private ArticleService as;
-	
+	private MongoConnection mc;
 	public TaggingFactory(MongoConnection mc) {
 		super();
+		this.mc = mc;
 		this.ts = new TaggingService(mc);
 		this.as = new ArticleService(mc);
 	}
@@ -55,17 +57,20 @@ public class TaggingFactory {
 	public JSONArray getPreferredArticles(Profile p)
 	{
 		JSONArray ja = new JSONArray();
-		
-		//List<Story> articles = new ArrayList<Story>();
-		
-		for(TagViewPair tvp : p.getLikes())
+		GsonWrapper gw = new GsonWrapper();
+		Gson g = gw.getGson();
+		MongoCollection<Document> keyPairs = mc.getDb().getCollection("tagPairs");
+		for(String id : p.getLikes())
 		{
-			Document d = (Document) ts.getCol().find(eq("name", tvp.getTag()));
+			Document tagPair = (Document) keyPairs.find(eq("_id", new ObjectId(id))).first();
+			TagViewPair tvp = g.fromJson(tagPair.toJson(), TagViewPair.class);
+		
+			Document d = (Document) ts.getCol().find(eq("name", tvp.getTag())).first();
 			@SuppressWarnings("unchecked")
 			List<ObjectId> tagArticles = (List<ObjectId>) d.get("articles");
-			for(ObjectId id : tagArticles)
+			for(ObjectId oid : tagArticles)
 			{
-				JSONObject jo = new JSONObject(as.getMongoDocument(id).toJson());
+				JSONObject jo = new JSONObject(as.getMongoDocument(oid).toJson());
 				ja.put(jo);
 			}
 		}

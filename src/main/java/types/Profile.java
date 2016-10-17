@@ -6,45 +6,39 @@ import java.util.List;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
-import com.mongodb.BasicDBList;
-
 public class Profile {
-	private ObjectId id;
+	private ObjectId _id;
 	private String username;
 	private String password;
-	private List<TagViewPair> likes = new ArrayList<TagViewPair>();
+	private List<String> likes = new ArrayList<String>();
 
-	public Profile(String username, String password) {
-		super();
-		id = new ObjectId();
-		this.username = username;
-		this.password = password;
-	}
 	public Profile() {
 		super();
-		id = new ObjectId();
+	}
+	public void addLike(ObjectId oid)
+	{
+		this.likes.add(oid.toString());
+	}
+	public List<String> getLikes()
+	{
+		return this.likes;
 	}
 	public ObjectId getId()
 	{
-		return this.id;
+		return this._id;
 	}
-	public List<TagViewPair> getLikes()
+	public void set_Id(ObjectId id)
 	{
-		return likes;
+		this._id = id;
 	}
 	public Document makeDocument()
 	{
 		Document d = new Document();
 		//if adding more fields, this needs to also be edited
+		d.append("_id", _id);
 		d.append("username", username);
 		d.append("password", password);
-		d.append("_id", id);
-		BasicDBList list = new BasicDBList();
-		for(TagViewPair tvp : likes)
-		{			
-			list.put(tvp.getViewCount(), tvp.getTag());
-		}
-		d.append("likes", list);
+		d.append("likes", likes);
 		return d;
 	}
 	public String getUsername() {
@@ -58,16 +52,5 @@ public class Profile {
 	}
 	public void setPassword(String password) {
 		this.password = password;
-	}
-	public void incrementTag(String tagName)
-	{
-		for(TagViewPair tvp : likes)
-		{
-			if(tvp.getTag().equals(tagName)){
-				tvp.incrementViewCount();
-				return;
-			}
-		}
-		likes.add(new TagViewPair(tagName, 1));
 	}
 }

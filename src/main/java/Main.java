@@ -1,8 +1,7 @@
 package main.java;
 
 import static com.mongodb.client.model.Filters.eq;
-import static spark.Spark.get;
-import static spark.Spark.post;
+import static spark.Spark.*;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -39,7 +38,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		// for running locally, remove this port line
-		// sport(Integer.valueOf(System.getenv("PORT")));
+		port(Integer.valueOf(System.getenv("PORT")));
 
 		MongoConnection mc = new MongoConnection(
 				"mongodb://arnoldout111:mongopassword1@ds035026.mlab.com:35026/heroku_s4r2lcpf", "heroku_s4r2lcpf");
@@ -85,7 +84,7 @@ public class Main {
 			public void run() {
 				Set<String> articles = new HashSet<String>();
 				ArticleService as = new ArticleService(mc);
-				MongoCollection col = as.getCollection("Article");
+				MongoCollection<Document> col = as.getCollection("Article");
 				FindIterable<Document> docs = col.find();
 				for (Document d : docs) {
 					articles.add(d.getString("uri"));

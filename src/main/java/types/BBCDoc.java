@@ -2,6 +2,7 @@ package main.java.types;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -20,7 +21,9 @@ public class BBCDoc extends XMLDoc {
 			Element eElement = (Element) nNode;
 			Story item = new Story(eElement.getElementsByTagName("guid").item(0).getTextContent());
 			item.setTitle(eElement.getElementsByTagName("title").item(0).getTextContent());
+
 			item.setDescription(eElement.getElementsByTagName("description").item(0).getTextContent());
+			item.setImgUri((eElement.getElementsByTagName("media:thumbnail").item(0)).getAttributes().getNamedItem("url").getNodeValue());
 			super.add(item);
 		}
 

@@ -130,11 +130,8 @@ public class Main {
 		get("/getArticles/:id", (request, response) -> {
 			String id = request.params(":id");
 			TaggingFactory tf = new TaggingFactory(mc);
-			try {
-				return tf.getPreferredArticles(ps.getProfile(new ObjectId(id)));
-			} catch (Exception e) {
-				return "Invalid id";
-			}
+			return tf.getPreferredArticles(ps.getProfile(new ObjectId(id)));
+			
 		});
 		get("/addLike/:id/:like", (request, response) -> {
 			String id = request.params(":id");
@@ -196,7 +193,9 @@ public class Main {
 			// make sure JSON is a valid Profile JSON object
 			Document dbo = null;
 			try {
-				dbo = g.fromJson(request.body(), Profile.class).makeDocument();
+				Profile p = g.fromJson(request.body(), Profile.class);
+				p.set_Id(new ObjectId());
+				dbo = p.makeDocument();
 			} catch (JSONException e) {
 				response.status(406);
 				return response;

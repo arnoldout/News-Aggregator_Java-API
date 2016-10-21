@@ -21,6 +21,7 @@ public class NYTDoc extends XMLDoc {
 			Story item = new Story(eElement.getElementsByTagName("guid").item(0).getTextContent());
 			item.setTitle(eElement.getElementsByTagName("title").item(0).getTextContent());
 			item.setDescription(eElement.getElementsByTagName("description").item(0).getTextContent());
+			item.setImgUri((eElement.getElementsByTagName("media:content").item(0)).getAttributes().getNamedItem("url").getNodeValue());
 			super.add(item);
 		}
 

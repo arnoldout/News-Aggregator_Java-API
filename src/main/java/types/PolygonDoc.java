@@ -20,6 +20,9 @@ public class PolygonDoc extends XMLDoc {
 			Element eElement = (Element) nNode;
 			Story item = new Story(eElement.getElementsByTagName("id").item(0).getTextContent());
 			item.setTitle(eElement.getElementsByTagName("title").item(0).getTextContent());
+			String img = (eElement.getElementsByTagName("content").item(0).getTextContent());
+			String[] parts = img.split("\"");
+			item.setImgUri(parts[3]);
 			//no categories, word cloud needed
 			super.add(item);
 		}

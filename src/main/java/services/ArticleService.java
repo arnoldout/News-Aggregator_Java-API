@@ -51,6 +51,7 @@ private MongoCollection<Document> col;
 		d.put("title", story.getTitle());
 		d.put("uri", story.getUri());
 		d.put("dateTime", story.getLdt());
+		d.put("imgUri", story.getImgUri());
 		return d;
 	}
 	public void removeArticle(Story story)

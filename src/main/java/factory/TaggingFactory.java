@@ -2,7 +2,9 @@ package main.java.factory;
 
 import static com.mongodb.client.model.Filters.eq;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -60,6 +62,7 @@ public class TaggingFactory {
 		GsonWrapper gw = new GsonWrapper();
 		Gson g = gw.getGson();
 		MongoCollection<Document> keyPairs = mc.getDb().getCollection("tagPairs");
+		Set<String> uniqueUris = new HashSet<String>();
 		for(String id : p.getLikes())
 		{
 			Document tagPair = (Document) keyPairs.find(eq("_id", new ObjectId(id))).first();
@@ -71,7 +74,10 @@ public class TaggingFactory {
 			for(ObjectId oid : tagArticles)
 			{
 				JSONObject jo = new JSONObject(as.getMongoDocument(oid).toJson());
-				ja.put(jo);
+				if(uniqueUris.add((String) jo.get("uri")))
+				{
+					ja.put(jo);	
+				}
 			}
 		}
 		return ja;

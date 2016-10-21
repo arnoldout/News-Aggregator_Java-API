@@ -13,6 +13,7 @@ public class Story {
     private String uri;
     private List<String> categories = new ArrayList<String>();
     private long ldt;
+    private String imgUri;
     public Story(String uri) {
 		super();
 		this.uri = uri;
@@ -52,6 +53,12 @@ public class Story {
 	}
 	public void setLdt(long ldt) {
 		this.ldt = ldt;
+	}
+	public String getImgUri() {
+		return imgUri;
+	}
+	public void setImgUri(String imgUri) {
+		this.imgUri = imgUri;
 	}
 
 }

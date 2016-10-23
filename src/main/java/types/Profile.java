@@ -19,6 +19,10 @@ public class Profile {
 	{
 		this.likes.add(oid.toString());
 	}
+	public void clearLikes()
+	{
+		this.likes = new ArrayList<String>();
+	}
 	public List<String> getLikes()
 	{
 		return this.likes;

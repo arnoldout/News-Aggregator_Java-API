@@ -38,7 +38,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		// for running locally, remove this port line
-		port(Integer.valueOf(System.getenv("PORT")));
+		//port(Integer.valueOf(System.getenv("PORT")));
 
 		MongoConnection mc = new MongoConnection(
 				"mongodb://arnoldout111:mongopassword1@ds035026.mlab.com:35026/heroku_s4r2lcpf", "heroku_s4r2lcpf");
@@ -179,11 +179,8 @@ public class Main {
 					// valid user account
 					return p.get("_id").toString();
 				}
-				// invalid account
-				return false;
 			}
-
-			return "";
+			return "false";
 		});
 		post("/addProfile", (request, response) -> {
 			GsonWrapper gw = new GsonWrapper();

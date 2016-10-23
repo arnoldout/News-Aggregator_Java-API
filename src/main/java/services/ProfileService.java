@@ -31,6 +31,11 @@ public class ProfileService extends MongoService {
 		Document d = (Document) col.find(eq("_id", id)).first();
 		return gw.getGson().fromJson(d.toJson(), Profile.class);
 	}
+	public void updateProfile(Profile p)
+	{
+		GsonWrapper gw = new GsonWrapper();
+		col.replaceOne((eq("_id", p.getId())), p.makeDocument());
+	}
 	public void incrementTag(String tagName, ObjectId oid)
 	{	 
 		Profile p = getProfile(oid);

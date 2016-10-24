@@ -76,7 +76,7 @@ public class Main {
 			}
 		};
 		// start in half an hour, run every 12 hours
-		mongoGarbageCol.schedule(mGC, 1000 * 60 * 30, 1000 * 60 * 60 * 12);
+		mongoGarbageCol.schedule(mGC, 1000 * 60 * 30, 1000 * 60 * 60);
 
 		Timer timer = new Timer();
 		TimerTask task = new TimerTask() {

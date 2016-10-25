@@ -13,10 +13,11 @@ import main.java.types.GetWLondonDoc;
 import main.java.types.NYTDoc;
 import main.java.types.PolygonDoc;
 import main.java.types.SkyNewsDoc;
+import main.java.types.TheGuardianDoc;
 import main.java.types.XMLDoc;
 
 public class NewsFactory {
-	public List<XMLDoc> docs = new ArrayList<XMLDoc>(Arrays.asList(new NYTDoc(), new PolygonDoc(), new BBCDoc(), new GetWLondonDoc(), new SkyNewsDoc()));
+	public List<XMLDoc> docs = new ArrayList<XMLDoc>(Arrays.asList(new NYTDoc(), new PolygonDoc(), new BBCDoc(), new GetWLondonDoc(), new SkyNewsDoc(), new TheGuardianDoc()));
 	
 	public void getDocs()
     {

@@ -139,6 +139,10 @@ public class Main {
 			ps.incrementTag(like, new ObjectId(id));
 			return "";
 		});
+		get("/allLikes", (request, response) -> {
+			ArticleService as = new ArticleService(mc);
+			return as.getArticles();
+		});
 
 		get("/getProfile/:profileId", (request, response) -> {
 			String id = request.params(":profileId");

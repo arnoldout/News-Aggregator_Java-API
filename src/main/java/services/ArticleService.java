@@ -8,6 +8,9 @@ import java.util.List;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 
 import main.java.types.Profile;
@@ -52,6 +55,19 @@ private MongoCollection<Document> col;
 		d.put("uri", story.getUri());
 		d.put("dateTime", story.getLdt());
 		d.put("imgUri", story.getImgUri());
+		return d;
+	}
+	public Document getArticles()
+	{
+		MongoCollection<Document> tagsCol = super.getCollection("ArticleTag");
+		FindIterable<Document> allTags = tagsCol.find();
+		List<String> tags = new ArrayList<String>();
+ 		for(Document d : allTags)
+		{
+			tags.add(d.getString("name"));
+		}
+		Document d = new Document();
+		d.append("articles", tags);
 		return d;
 	}
 	public void removeArticle(Story story)

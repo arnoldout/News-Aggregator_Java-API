@@ -38,7 +38,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		// for running locally, remove this port line
-		port(Integer.valueOf(System.getenv("PORT")));
+		//port(Integer.valueOf(System.getenv("PORT")));
 
 		MongoConnection mc = new MongoConnection(
 				"mongodb://arnoldout111:mongopassword1@ds035026.mlab.com:35026/heroku_s4r2lcpf", "heroku_s4r2lcpf");
@@ -138,6 +138,10 @@ public class Main {
 			String like = request.params(":like");
 			ps.incrementTag(like, new ObjectId(id));
 			return "";
+		});
+		get("/allLikes", (request, response) -> {
+			ArticleService as = new ArticleService(mc);
+			return as.getArticles();
 		});
 
 		get("/getProfile/:profileId", (request, response) -> {

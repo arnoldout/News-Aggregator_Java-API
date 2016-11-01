@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.json.JSONObject;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -57,18 +58,18 @@ private MongoCollection<Document> col;
 		d.put("imgUri", story.getImgUri());
 		return d;
 	}
-	public Document getArticles()
+	public JSONObject getArticles()
 	{
 		MongoCollection<Document> tagsCol = super.getCollection("ArticleTag");
 		FindIterable<Document> allTags = tagsCol.find();
 		List<String> tags = new ArrayList<String>();
+		JSONObject jo = new JSONObject();
  		for(Document d : allTags)
 		{
 			tags.add(d.getString("name"));
 		}
-		Document d = new Document();
-		d.append("articles", tags);
-		return d;
+		jo.append("articles", tags);
+		return jo;
 	}
 	public void removeArticle(Story story)
 	{

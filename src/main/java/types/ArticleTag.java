@@ -29,4 +29,7 @@ public class ArticleTag {
 	public void setArticles(List<ObjectId> articles) {
 		this.articles = articles;
 	}
+	public ObjectId get_id() {
+		return _id;
+	}
 }

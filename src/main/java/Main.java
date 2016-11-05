@@ -38,7 +38,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		// for running locally, remove this port line
-		port(Integer.valueOf(System.getenv("PORT")));
+		//port(Integer.valueOf(System.getenv("PORT")));
 
 		MongoConnection mc = new MongoConnection(
 				"mongodb://arnoldout111:mongopassword1@ds035026.mlab.com:35026/heroku_s4r2lcpf", "heroku_s4r2lcpf");
@@ -55,7 +55,6 @@ public class Main {
 				Gson g = gw.getGson();
 				ArticleService as = new ArticleService(mc);
 				MongoCollection<Document> articles = as.getCollection("Article");
-				MongoCollection<Document> tags = as.getCollection("ArticleTag");
 				FindIterable<Document> docs = articles.find();
 				for (Document d : docs) {
 					Calendar now = Calendar.getInstance();

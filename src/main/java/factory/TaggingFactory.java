@@ -76,14 +76,17 @@ public class TaggingFactory {
 			TagViewPair tvp = g.fromJson(tagPair.toJson(), TagViewPair.class);
 			tvps.add(tvp);
 			Document d = (Document) ts.getCol().find(eq("name", tvp.getTag())).first();
-			@SuppressWarnings("unchecked")
-			List<ObjectId> tagArticles = (List<ObjectId>) d.get("articles");
-			for(ObjectId oid : tagArticles)
+			if(d!=null)
 			{
-				JSONObject jo = new JSONObject(as.getMongoDocument(oid).toJson());
-				if(uniqueUris.add((String) jo.get("uri")))
+				@SuppressWarnings("unchecked")
+				List<ObjectId> tagArticles = (List<ObjectId>) d.get("articles");
+				for(ObjectId oid : tagArticles)
 				{
-					ja.put(jo);	
+					JSONObject jo = new JSONObject(as.getMongoDocument(oid).toJson());
+					if(uniqueUris.add((String) jo.get("uri")))
+					{
+						ja.put(jo);	
+					}
 				}
 			}
 		}

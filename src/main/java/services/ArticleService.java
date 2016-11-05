@@ -9,12 +9,10 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.json.JSONObject;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Filters;
 
-import main.java.types.Profile;
 import main.java.types.Story;
 
 public class ArticleService extends MongoService{
@@ -70,6 +68,31 @@ private MongoCollection<Document> col;
 		}
 		jo.append("articles", tags);
 		return jo;
+	}
+	public FindIterable<Document> getAllArticles()
+	{
+		MongoCollection<Document> tagsCol = super.getCollection("ArticleTag");
+		return tagsCol.find();
+	}
+	public void removeTag(List<ObjectId> id)
+	{
+		MongoCollection<Document> tagsCol = super.getCollection("ArticleTag");
+		//tagsCol.deleteOne(eq("_id", id));
+		tagsCol.deleteMany(Filters.in("_id", id));
+	}
+	public List<ObjectId> getEmptyArticles()
+	{
+		FindIterable<Document> allTags = getAllArticles();
+		List<ObjectId> emptyTags = new ArrayList<ObjectId>();
+		for(Document d : allTags)
+		{
+			ArrayList articles = (ArrayList) d.get("articles");
+			if(articles.isEmpty())
+			{
+				emptyTags.add((ObjectId) d.get("_id"));
+			}
+		}
+		return emptyTags;
 	}
 	public void removeArticle(Story story)
 	{

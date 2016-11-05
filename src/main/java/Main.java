@@ -38,7 +38,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		// for running locally, remove this port line
-		port(Integer.valueOf(System.getenv("PORT")));
+		//port(Integer.valueOf(System.getenv("PORT")));
 
 		MongoConnection mc = new MongoConnection(
 				"mongodb://arnoldout111:mongopassword1@ds035026.mlab.com:35026/heroku_s4r2lcpf", "heroku_s4r2lcpf");
@@ -73,9 +73,11 @@ public class Main {
 						System.out.println("af");
 					}
 				}
+				List<ObjectId> badIds = as.getEmptyArticles();
+				as.removeTag(badIds);
 			}
 		};
-		// start in half an hour, run every 12 hours
+		// start in half an hour, run every 1 hour
 		mongoGarbageCol.schedule(mGC, 1000 * 60 * 30, 1000 * 60 * 60);
 
 		Timer timer = new Timer();

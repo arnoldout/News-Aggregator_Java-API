@@ -86,7 +86,7 @@ private MongoCollection<Document> col;
 		List<ObjectId> emptyTags = new ArrayList<ObjectId>();
 		for(Document d : allTags)
 		{
-			ArrayList articles = (ArrayList) d.get("articles");
+			ArrayList<?> articles = (ArrayList<?>) d.get("articles");
 			if(articles.isEmpty())
 			{
 				emptyTags.add((ObjectId) d.get("_id"));

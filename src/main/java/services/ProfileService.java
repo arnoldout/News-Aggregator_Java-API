@@ -2,17 +2,10 @@ package main.java.services;
 
 import static com.mongodb.client.model.Filters.eq;
 
-import java.lang.reflect.Type;
-
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
 import com.mongodb.client.MongoCollection;
 
 import main.java.types.Profile;
@@ -33,7 +26,6 @@ public class ProfileService extends MongoService {
 	}
 	public void updateProfile(Profile p)
 	{
-		GsonWrapper gw = new GsonWrapper();
 		col.replaceOne((eq("_id", p.getId())), p.makeDocument());
 	}
 	public void incrementTag(String tagName, ObjectId oid)
@@ -48,7 +40,6 @@ public class ProfileService extends MongoService {
 			TagViewPair tvp = g.fromJson(tagPair.toJson(), TagViewPair.class);
 			if(tvp.getTag().equals(tagName)){
 				tvp.incrementViewCount();
-				Document dd = tvp.makeDocument();
 				keyPairs.replaceOne(eq("_id", tvp.get_id()), tvp.makeDocument());
 				return;
 			}

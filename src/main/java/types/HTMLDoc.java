@@ -44,6 +44,7 @@ public class HTMLDoc {
 			e.printStackTrace();
 			return null;
 		}
+		@SuppressWarnings("unchecked")
 		Map.Entry<String,Integer>[] entries = words.entrySet().toArray(new Map.Entry[0]);
         Arrays.sort(entries, new Comparator<Map.Entry<String, Integer>>() {
             @Override

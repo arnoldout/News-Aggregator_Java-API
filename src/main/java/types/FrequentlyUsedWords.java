@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.poi.ddf.EscherColorRef.SysIndexSource;
-
 public class FrequentlyUsedWords {
 	private Set<String> freqWords = new HashSet<String>();
 

@@ -114,6 +114,8 @@ public class Main {
 				} catch (InterruptedException e) {
 					System.out.println("Thread Broken");
 				}
+				List<ObjectId> badIds = as.getEmptyArticles();
+				as.removeTag(badIds);
 				// TaggingFactory.generateTags(st, mc);
 				long endTime = System.currentTimeMillis() % 1000;
 				System.out.println(endTime - startTime);
@@ -141,7 +143,7 @@ public class Main {
 		});
 		get("/allLikes", (request, response) -> {
 			ArticleService as = new ArticleService(mc);
-			return as.getArticles();
+			return as.getAllTagNames();
 		});
 
 		get("/getProfile/:profileId", (request, response) -> {

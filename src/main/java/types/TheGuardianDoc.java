@@ -21,7 +21,7 @@ public class TheGuardianDoc extends XMLDoc {
 			Story item = new Story(eElement.getElementsByTagName("guid").item(0).getTextContent());
 			item.setTitle(eElement.getElementsByTagName("title").item(0).getTextContent());
 			item.setDescription(eElement.getElementsByTagName("description").item(0).getTextContent().replaceAll("\\<.*?>",""));
-			item.setImgUri((eElement.getElementsByTagName("media:content").item(0)).getAttributes().getNamedItem("url").getNodeValue());	
+			item.setImgUri((eElement.getElementsByTagName("media:content").item(1)).getAttributes().getNamedItem("url").getNodeValue());	
 			//no categories, word cloud needed
 			super.add(item);
 		}	

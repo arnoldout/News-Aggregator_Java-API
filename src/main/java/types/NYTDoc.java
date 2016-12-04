@@ -24,6 +24,5 @@ public class NYTDoc extends XMLDoc {
 			item.setImgUri((eElement.getElementsByTagName("media:content").item(0)).getAttributes().getNamedItem("url").getNodeValue());
 			super.add(item);
 		}
-
 	}
 }

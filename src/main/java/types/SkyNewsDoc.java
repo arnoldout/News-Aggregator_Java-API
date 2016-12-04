@@ -21,7 +21,9 @@ public class SkyNewsDoc extends XMLDoc {
 			Story item = new Story(eElement.getElementsByTagName("guid").item(0).getTextContent());
 			item.setTitle(eElement.getElementsByTagName("title").item(0).getTextContent());
 			item.setDescription(eElement.getElementsByTagName("description").item(0).getTextContent());
-			item.setImgUri((eElement.getElementsByTagName("media:thumbnail").item(0)).getAttributes().getNamedItem("url").getNodeValue());			//no categories, word cloud needed
+			String img = ((eElement.getElementsByTagName("media:thumbnail").item(0)).getAttributes().getNamedItem("url").getNodeValue());			//no categories, word cloud needed
+			img.replace("70x70", "1920x1080");
+			item.setImgUri(img);
 			super.add(item);
 		}
 	}

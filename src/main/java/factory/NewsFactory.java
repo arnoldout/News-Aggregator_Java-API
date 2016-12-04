@@ -23,8 +23,10 @@ public class NewsFactory {
 		//docs size wont ever be massive, it will only ever be the amount of supported sites
 		ExecutorService executor = Executors.newFixedThreadPool(docs.size());
         
+		//loop through all xml files, and parse on a thread
 		for(XMLDoc d : docs)
         {
+			//parse the xml file in a thread
             executor.submit(() -> {d.parseXml();});
         }
 		executor.shutdown();

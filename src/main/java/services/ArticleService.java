@@ -23,7 +23,7 @@ private MongoCollection<Document> col;
 		super.setDb(mc.getDb());
 		col = super.getCollection("Article");
 	}
-	public Boolean checkFor(String tagName)
+	public Boolean ifTagExists(String tagName)
 	{
 		if(getMongoDocument(tagName)==null)
 		{
@@ -33,19 +33,23 @@ private MongoCollection<Document> col;
 	}
 	public Document getMongoDocument(String tagName)
 	{
+		//get article from mongo from tag name
 		return col.find(eq("name", tagName)).first();
 	}
 	public Document getMongoDocument(ObjectId id)
 	{
+		//get article with id
 		return col.find(eq("_id", id)).first();
 	}
 	public void addArticle(Story story)
 	{
+		//insert article to mongo
 		Document d = makeDocument(story);
 		col.insertOne(d);
 	}
 	public Document makeDocument(Story story)
 	{
+		//convert story object to JSON
 		Document d = new Document();
 		d.put("_id", story.get_id());
 		d.put("categories", story.getCategories());
@@ -58,12 +62,14 @@ private MongoCollection<Document> col;
 	}
 	public JSONObject getArticles()
 	{
+		//get article tags from mongo
 		MongoCollection<Document> tagsCol = super.getCollection("ArticleTag");
 		FindIterable<Document> allTags = tagsCol.find();
 		List<String> tags = new ArrayList<String>();
 		JSONObject jo = new JSONObject();
  		for(Document d : allTags)
 		{
+ 			//just get tag names
 			tags.add(d.getString("name"));
 		}
 		jo.append("articles", tags);
@@ -80,6 +86,8 @@ private MongoCollection<Document> col;
 		//tagsCol.deleteOne(eq("_id", id));
 		tagsCol.deleteMany(Filters.in("_id", id));
 	}
+	
+	//get tags that have no assigned articles
 	public List<ObjectId> getEmptyArticles()
 	{
 		FindIterable<Document> allTags = getAllArticles();
@@ -94,6 +102,7 @@ private MongoCollection<Document> col;
 		}
 		return emptyTags;
 	}
+	//remove article from mongo
 	public void removeArticle(Story story)
 	{
 		MongoCollection<Document> tagsCol = super.getCollection("ArticleTag");

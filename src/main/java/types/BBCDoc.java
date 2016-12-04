@@ -5,10 +5,18 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/*
+ * XML Document
+ * gets data from the BBC Rss feed, 
+ * Converts info into story objects
+ * stores into list of stories
+ */
 public class BBCDoc extends XMLDoc {
 
+	//link to bbc rss feed
 	public final String url = "http://feeds.bbci.co.uk/news/rss.xml";
 
+	//parse rss feed for stories
 	@Override
 	public void parseXml() {
 		Document xmlReader = getXML(this.url);

@@ -11,6 +11,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 
+//adapted from http://stackoverflow.com/questions/13141245/load-id-mongodb-my-object-in-java
 public class GsonWrapper {
 	private JsonDeserializer<ObjectId> des = new JsonDeserializer<ObjectId>() {
 

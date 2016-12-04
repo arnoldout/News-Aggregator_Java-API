@@ -5,10 +5,18 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/*
+* XML Document
+* gets data from the The Guardian Rss feed, 
+* Converts info into story objects
+* stores into list of stories
+*/
 public class TheGuardianDoc extends XMLDoc {
 
+	//link to world news rss feed from the guardian
 	public final String url = "https://www.theguardian.com/world/rss";
 
+	//parse rss feed
 	@Override
 	public void parseXml() {
 		Document xmlReader = getXML(this.url);

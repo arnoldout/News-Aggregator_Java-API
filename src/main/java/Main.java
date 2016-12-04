@@ -40,10 +40,12 @@ public class Main {
 		// for running locally, remove this port line
 		port(Integer.valueOf(System.getenv("PORT")));
 
+		//mongo connection string
 		MongoConnection mc = new MongoConnection(
 				"mongodb://arnoldout111:mongopassword1@ds035026.mlab.com:35026/heroku_s4r2lcpf", "heroku_s4r2lcpf");
 		ProfileService ps = new ProfileService(mc);
 
+		//used as blacklist when crawling pages
 		FrequentlyUsedWords fuw = new FrequentlyUsedWords();
 		fuw.generateWords();
 
@@ -51,6 +53,10 @@ public class Main {
 		TimerTask mGC = new TimerTask() {
 			@Override
 			public void run() {
+				/*clean up mongo every hour, half an hour after init running main
+					
+					remove any news articles that have been stored in mongo for 12 hours
+				*/
 				GsonWrapper gw = new GsonWrapper();
 				Gson g = gw.getGson();
 				ArticleService as = new ArticleService(mc);
@@ -63,15 +69,14 @@ public class Main {
 					Calendar docTime = Calendar.getInstance();
 					docTime.setTime(docDate);
 					docTime.add(Calendar.HOUR_OF_DAY, 12);
+					//check if date on article is 12 hours before present time
 					if (docTime.before(now)) {
 						// remove Article
 						Story st = g.fromJson(d.toJson(), Story.class);
 						as.removeArticle(st);
-					} else {
-						// leave article
-						System.out.println("af");
 					}
 				}
+				//remove empty references to articles
 				List<ObjectId> badIds = as.getEmptyArticles();
 				as.removeTag(badIds);
 			}
@@ -83,19 +88,24 @@ public class Main {
 		TimerTask task = new TimerTask() {
 			@Override
 			public void run() {
+				/*
+				 * Every hour, check rss feeds for new content
+				 */
 				Set<String> articles = new HashSet<String>();
 				ArticleService as = new ArticleService(mc);
 				MongoCollection<Document> col = as.getCollection("Article");
 				FindIterable<Document> docs = col.find();
 				for (Document d : docs) {
+					//add uris to new articles
 					articles.add(d.getString("uri"));
 				}
 				Set<Story> storyCol = new HashSet<Story>();
 				NewsFactory nf = new NewsFactory();
 				nf.getDocs();
-				long startTime = System.currentTimeMillis() % 1000;
 				ExecutorService executor = Executors.newFixedThreadPool(70);
 				TaggingFactory tf = new TaggingFactory(mc);
+				//parse article bodies for keywords and tags
+				//check keywords against blacklist of frequently occuring english words	
 				for (XMLDoc d : nf.docs) {
 					for (Story s : d.getNewsItems()) {
 						HTMLDoc doc = new HTMLDoc();
@@ -113,38 +123,40 @@ public class Main {
 				try {
 					executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 				} catch (InterruptedException e) {
-					System.out.println("Thread Broken");
+					System.out.println("Thread Interrupted");
 				}
-				// TaggingFactory.generateTags(st, mc);
-				long endTime = System.currentTimeMillis() % 1000;
-				System.out.println(endTime - startTime);
 				// all stories now categorized each hour with top three tags
-				System.out.println("done");
 			}
 		};
+		//run task every hour
 		timer.schedule(task, 01, 1000 * 60 * 60);
 
 		// basic help response to a blank call to the webpage
 		get("/", (request, response) -> {
 			return "null";
 		});
+		//get all news stories containing tags in common with the user
 		get("/getArticles/:id", (request, response) -> {
+			//user's id
 			String id = request.params(":id");
 			TaggingFactory tf = new TaggingFactory(mc);
 			return tf.getPreferredArticles(ps.getProfile(new ObjectId(id)));
 			
 		});
+		//add like to account with user's id
 		get("/addLike/:id/:like", (request, response) -> {
 			String id = request.params(":id");
 			String like = request.params(":like");
 			ps.incrementTag(like, new ObjectId(id));
 			return "";
 		});
+		//get all available likes in mongo
 		get("/allLikes", (request, response) -> {
 			ArticleService as = new ArticleService(mc);
 			return as.getArticles();
 		});
 
+		//get full user profile from user's id
 		get("/getProfile/:profileId", (request, response) -> {
 			String id = request.params(":profileId");
 			MongoCollection<Document> col = ps.getCollection("profile");
@@ -162,6 +174,8 @@ public class Main {
 			}
 
 		});
+		//login a user, with a sign in credential in the post body
+		//return a user id from a username and password
 		post("/login", (request, response) -> {
 			GsonWrapper gw = new GsonWrapper();
 			Gson g = gw.getGson();
@@ -187,6 +201,8 @@ public class Main {
 			}
 			return "false";
 		});
+		
+		//register new user if username is unique
 		post("/addProfile", (request, response) -> {
 			GsonWrapper gw = new GsonWrapper();
 			Gson g = gw.getGson();
@@ -214,9 +230,11 @@ public class Main {
 			return dbo.get("_id").toString();
 		});
 
+	/*
+	 * unimplemented post method
 		post("/changePassword", (request, response) -> {
 			request.body();
 			return "";
-		});
+		});*/
 	}
 }

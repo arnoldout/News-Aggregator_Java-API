@@ -3,6 +3,8 @@ package main.java.types;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
+//simple object to store tags, an id for mongo, and the amount of times that user has read
+//about that tag
 public class TagViewPair {
 
 	private ObjectId _id; 

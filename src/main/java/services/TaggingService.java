@@ -20,9 +20,11 @@ public class TaggingService extends MongoService {
 		super.setDb(mc.getDb());
 		col = super.getCollection("ArticleTag");
 	} 	
+	//get mongoCollection
 	public MongoCollection<Document> getCol(){
 		return col;
 	}
+	//check if tag exists
 	public Boolean checkForTag(String tagName)
 	{
 		if(getDocument(tagName)==null)
@@ -31,6 +33,8 @@ public class TaggingService extends MongoService {
 		}
 		return true;
 	}
+	//add tag, and link to story
+	//or add a link to the story to a prexisting tag if one already exists
 	public void addStory(Story s, String tagName)
 	{
 		Document d = getDocument(tagName);
@@ -45,16 +49,19 @@ public class TaggingService extends MongoService {
 			System.out.println("not happenin bro");
 		}
 	}
+	//get tag object from Mongo
 	public Document getDocument(String tagName)
 	{
 		return col.find(eq("name", tagName)).first();
 	}
+	//add tag object to Mongo
 	public void addTag(String tagName)
 	{
 		ArticleTag tag = new ArticleTag(tagName);
 		Document d = makeDocument(tag);
 		col.insertOne(d);
 	}
+	//make json from tag object
 	public Document makeDocument(ArticleTag tag)
 	{
 		Document d = new Document();

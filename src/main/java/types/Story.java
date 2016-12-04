@@ -5,14 +5,22 @@ import java.util.Calendar;
 import java.util.List;
 
 import org.bson.types.ObjectId;
-
+//Story object is a news article
 public class Story {
+	
+	//Mongo ID
 	private ObjectId _id;
+	//title of article
 	private String title;
+	//short description of story
     private String description;
+    //uri linking to article
     private String uri;
+    //list of tags relating to story
     private List<String> categories = new ArrayList<String>();
+    //date story created in this program
     private long ldt;
+    //associated image to article
     private String imgUri;
     public Story(String uri) {
 		super();

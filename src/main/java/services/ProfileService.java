@@ -18,16 +18,21 @@ public class ProfileService extends MongoService {
 		super.setDb(db.getDb());
 		col = super.getCollection("profile");
 	}
+	//get profile from mongo, linked to objectId
 	public Profile getProfile(ObjectId id)
 	{
 		GsonWrapper gw = new GsonWrapper();
 		Document d = (Document) col.find(eq("_id", id)).first();
 		return gw.getGson().fromJson(d.toJson(), Profile.class);
 	}
+	//update mongo user
 	public void updateProfile(Profile p)
 	{
 		col.replaceOne((eq("_id", p.getId())), p.makeDocument());
 	}
+	
+	//increment the counter associated with the tag
+	//initialize a counter and add the tag, if none present
 	public void incrementTag(String tagName, ObjectId oid)
 	{	 
 		Profile p = getProfile(oid);

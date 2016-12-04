@@ -5,10 +5,18 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/*
+* XML Document
+* gets data from the New York Times Rss feed, 
+* Converts info into story objects
+* stores into list of stories
+*/
 public class NYTDoc extends XMLDoc {
 
+	//link to nyt rss most viewed stories rss feed
 	public final String url = "http://rss.nytimes.com/services/xml/rss/nyt/MostViewed.xml";
 
+	//parse the rss feed
 	@Override
 	public void parseXml() {
 		Document xmlReader = getXML(this.url);

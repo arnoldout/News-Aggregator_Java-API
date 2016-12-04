@@ -4,11 +4,18 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
+/*
+* XML Document
+* gets data from the Polygon Rss feed, 
+* Converts info into story objects
+* stores into list of stories
+*/
 public class PolygonDoc extends XMLDoc {
 
+	//link to polygon rss feed
 	public final String url = "http://www.polygon.com/rss/index.xml";
 
+	//parse rss feed
 	@Override
 	public void parseXml() {
 		Document xmlReader = getXML(this.url);

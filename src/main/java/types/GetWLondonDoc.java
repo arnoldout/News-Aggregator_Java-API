@@ -5,8 +5,16 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/*
+ * XML Document
+ * gets data from the getWestLondon Sports Rss feed, 
+ * Converts info into story objects
+ * stores into list of stories
+ */
 public class GetWLondonDoc extends XMLDoc{
+	//link to GetWestLondon Sports Rss feed
 	public final String url = "http://www.getwestlondon.co.uk/sport/?service=rss";
+	//parse rss feed
 	@Override
 	public void parseXml() {
 		Document xmlReader = getXML(this.url);

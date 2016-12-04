@@ -6,7 +6,7 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
-
+//abstract class relating to the basic data that XML-RSS readers need
 public abstract class XMLDoc {
 	private List<Story> newsItems = new ArrayList<Story>();
 

@@ -42,6 +42,7 @@ public class TaggingFactory {
 
 	public void generateTags(Story story)
 	{
+		//generate tags from article
 		as.addArticle(story);
 		try{
 			for(String str : story.getCategories())
@@ -64,6 +65,7 @@ public class TaggingFactory {
 
 	public JSONArray getPreferredArticles(Profile p)
 	{
+		//get all articles with same tags as user's likes
 		JSONArray ja = new JSONArray();
 		GsonWrapper gw = new GsonWrapper();
 		Gson g = gw.getGson();

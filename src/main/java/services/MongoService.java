@@ -6,6 +6,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoIterable;
 
+//Mongo collection management
 public abstract class MongoService {
 
 	private MongoDatabase db;

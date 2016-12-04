@@ -7,8 +7,11 @@ import org.bson.types.ObjectId;
 
 public class ArticleTag {
 
+	//MongoID
 	private ObjectId _id;
+	//tag name, i.e Trump, Syria, Barcelona
 	private String name;
+	//list of articles containing this tag
 	private List<ObjectId> articles;
 	
 	public ArticleTag(String name) {

@@ -30,7 +30,7 @@ public class SkyNewsDoc extends XMLDoc {
 			item.setTitle(eElement.getElementsByTagName("title").item(0).getTextContent());
 			item.setDescription(eElement.getElementsByTagName("description").item(0).getTextContent());
 			String img = ((eElement.getElementsByTagName("media:thumbnail").item(0)).getAttributes().getNamedItem("url").getNodeValue());			//no categories, word cloud needed
-			img.replace("70x70", "1920x1080");
+			img = img.replace("70x70", "1920x1080");
 			item.setImgUri(img);
 			super.add(item);
 		}

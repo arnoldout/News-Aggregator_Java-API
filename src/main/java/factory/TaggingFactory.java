@@ -80,9 +80,12 @@ public class TaggingFactory {
 				@SuppressWarnings("unchecked")
 				List<ObjectId> tagArticles = (List<ObjectId>) d.get("articles");
 				for (ObjectId oid : tagArticles) {
-					JSONObject jo = new JSONObject(as.getMongoDocument(oid).toJson());
-					if (uniqueUris.add((String) jo.get("uri"))) {
-						ja.put(jo);
+					if(!p.getHistory().contains(oid.toString()))
+					{
+						JSONObject jo = new JSONObject(as.getMongoDocument(oid).toJson());
+						if (uniqueUris.add((String) jo.get("uri"))) {
+							ja.put(jo);
+						}
 					}
 				}
 			}

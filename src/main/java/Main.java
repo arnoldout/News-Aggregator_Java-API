@@ -179,7 +179,14 @@ public class Main {
 			ArticleService as = new ArticleService(mc);
 			return as.getArticles();
 		});
-
+		
+		// get all available likes in mongo
+		get("/readArticle/:id/:url", (request, response) -> {
+			Profile p = ps.getProfile(new ObjectId(request.params(":id")));
+			p.getHistory().add(request.params(":url"));
+			ps.updateProfile(p);
+			return "true";
+		});
 		// get full user profile from user's id
 		get("/getProfile/:profileId", (request, response) -> {
 			String id = request.params(":profileId");

@@ -7,10 +7,12 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 
 public class Profile {
+	
 	private ObjectId _id;
 	private String username;
 	private String password;
 	private List<String> likes = new ArrayList<String>();
+	private List<String> history = new ArrayList<String>();
 
 	public Profile() {
 		super();
@@ -43,6 +45,7 @@ public class Profile {
 		d.append("username", username);
 		d.append("password", password);
 		d.append("likes", likes);
+		d.append("history", history);
 		return d;
 	}
 	public String getUsername() {
@@ -56,5 +59,14 @@ public class Profile {
 	}
 	public void setPassword(String password) {
 		this.password = password;
+	}
+	public void addLink(String element) {
+		history.add(element);
+	}
+	public List<String> getHistory() {
+		return history;
+	}
+	public void setHistory(List<String> history) {
+		this.history = history;
 	}
 }

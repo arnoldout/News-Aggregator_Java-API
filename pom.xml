@@ -17,6 +17,24 @@
 			<artifactId>jsoup</artifactId>
 			<version>1.8.3</version>
 		</dependency><!-- https://mvnrepository.com/artifact/org.apache.tika/tika-core -->
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-queryparser -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-queryparser</artifactId>
+			<version>6.5.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-analyzers-common -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-analyzers-common</artifactId>
+			<version>6.5.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-core -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-core</artifactId>
+			<version>6.5.0</version>
+		</dependency>
 		<dependency>
 			<groupId>org.apache.tika</groupId>
 			<artifactId>tika-core</artifactId>
@@ -71,7 +89,7 @@
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 			<version>20151123</version>
-		</dependency>		
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

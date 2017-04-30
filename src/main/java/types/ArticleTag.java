@@ -3,6 +3,7 @@ package main.java.types;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bson.Document;
 import org.bson.types.ObjectId;
 
 public class ArticleTag {
@@ -19,6 +20,12 @@ public class ArticleTag {
 		this._id = new ObjectId();
 		this.name = name;
 		this.articles = new ArrayList<ObjectId>();
+	}
+	public ArticleTag(Document d)
+	{
+		this._id = (ObjectId)d.get("_id");
+		this.name = (String) d.get("name");
+		this.articles = (List<ObjectId>) d.get("articles");
 	}
 	public String getName() {
 		return name;

@@ -1,15 +1,21 @@
 package main.java;
 
 import static com.mongodb.client.model.Filters.eq;
-import static spark.Spark.*;
+import static spark.Spark.get;
+import static spark.Spark.post;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Queue;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -28,6 +34,7 @@ import main.java.services.ArticleService;
 import main.java.services.GsonWrapper;
 import main.java.services.MongoConnection;
 import main.java.services.ProfileService;
+import main.java.services.TaggingService;
 import main.java.types.FrequentlyUsedWords;
 import main.java.types.HTMLDoc;
 import main.java.types.Profile;
@@ -38,14 +45,14 @@ public class Main {
 
 	public static void main(String[] args) {
 		// for running locally, remove this port line
-		port(Integer.valueOf(System.getenv("PORT")));
+		// port(Integer.valueOf(System.getenv("PORT")));
 
-		//mongo connection string
+		// mongo connection string
 		MongoConnection mc = new MongoConnection(
 				"mongodb://arnoldout111:mongopassword1@ds035026.mlab.com:35026/heroku_s4r2lcpf", "heroku_s4r2lcpf");
 		ProfileService ps = new ProfileService(mc);
 
-		//used as blacklist when crawling pages
+		// used as blacklist when crawling pages
 		FrequentlyUsedWords fuw = new FrequentlyUsedWords();
 		fuw.generateWords();
 
@@ -53,10 +60,13 @@ public class Main {
 		TimerTask mGC = new TimerTask() {
 			@Override
 			public void run() {
-				/*clean up mongo every hour, half an hour after init running main
-					
-					remove any news articles that have been stored in mongo for 12 hours
-				*/
+				/*
+				 * clean up mongo every hour, half an hour after init running
+				 * main
+				 * 
+				 * remove any news articles that have been stored in mongo for
+				 * 12 hours
+				 */
 				GsonWrapper gw = new GsonWrapper();
 				Gson g = gw.getGson();
 				ArticleService as = new ArticleService(mc);
@@ -69,16 +79,13 @@ public class Main {
 					Calendar docTime = Calendar.getInstance();
 					docTime.setTime(docDate);
 					docTime.add(Calendar.HOUR_OF_DAY, 12);
-					//check if date on article is 12 hours before present time
+					// check if date on article is 12 hours before present time
 					if (docTime.before(now)) {
 						// remove Article
 						Story st = g.fromJson(d.toJson(), Story.class);
 						as.removeArticle(st);
 					}
 				}
-				//remove empty references to articles
-				List<ObjectId> badIds = as.getEmptyArticles();
-				as.removeTag(badIds);
 			}
 		};
 		// start in half an hour, run every 1 hour
@@ -96,7 +103,7 @@ public class Main {
 				MongoCollection<Document> col = as.getCollection("Article");
 				FindIterable<Document> docs = col.find();
 				for (Document d : docs) {
-					//add uris to new articles
+					// add uris to new articles
 					articles.add(d.getString("uri"));
 				}
 				Set<Story> storyCol = new HashSet<Story>();
@@ -104,21 +111,40 @@ public class Main {
 				nf.getDocs();
 				ExecutorService executor = Executors.newFixedThreadPool(70);
 				TaggingFactory tf = new TaggingFactory(mc);
-				//parse article bodies for keywords and tags
-				//check keywords against blacklist of frequently occuring english words	
+				// parse article bodies for keywords and tags
+				// check keywords against blacklist of frequently occuring
+				// english words
+				TaggingService ts = new TaggingService(mc);
+				Map<String, Queue<Story>> tags = new ConcurrentHashMap<String, Queue<Story>>();
+				FindIterable<Document> b = ts.getCollection("ArticleTag").find();
+				for (Document doc2 : b) {
+					tags.put((String) doc2.get("name"), new ArrayBlockingQueue<Story>(360));
+				}
+				System.out.println("Current Tags size:" + tags.size());
 				for (XMLDoc d : nf.docs) {
 					for (Story s : d.getNewsItems()) {
 						HTMLDoc doc = new HTMLDoc();
 						doc.url = s.getUri();
 						if (!(articles.contains(doc.url))) {
-							executor.submit(() -> {
-								s.setCategories(doc.parseText(fuw.getFreqWords()));
-								storyCol.add(s);
-								tf.generateTags(s);
-							});
+							s.setCategories(doc.parseText(fuw.getFreqWords()));
+							storyCol.add(s);
+							tf.generateTags(s, tags);
 						}
 					}
 				}
+				System.out.println("Current Tags size:" + tags.size());
+				
+				for (Entry<String, Queue<Story>> entry : tags.entrySet()) {
+					// get or add and get tag object
+					String key = entry.getKey();
+					Queue<Story> value = entry.getValue();
+					executor.submit(() -> {
+						while (!value.isEmpty()) {
+							ts.addStory(value.poll(), key);
+						}
+					});
+				}
+				System.out.println("DONE");
 				executor.shutdown();
 				try {
 					executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
@@ -128,35 +154,35 @@ public class Main {
 				// all stories now categorized each hour with top three tags
 			}
 		};
-		//run task every hour
+		// run task every hour
 		timer.schedule(task, 01, 1000 * 60 * 60);
 
 		// basic help response to a blank call to the webpage
 		get("/", (request, response) -> {
 			return "null";
 		});
-		//get all news stories containing tags in common with the user
+		// get all news stories containing tags in common with the user
 		get("/getArticles/:id", (request, response) -> {
-			//user's id
+			// user's id
 			String id = request.params(":id");
 			TaggingFactory tf = new TaggingFactory(mc);
 			return tf.getPreferredArticles(ps.getProfile(new ObjectId(id)));
-			
+
 		});
-		//add like to account with user's id
+		// add like to account with user's id
 		get("/addLike/:id/:like", (request, response) -> {
 			String id = request.params(":id");
 			String like = request.params(":like");
 			ps.incrementTag(like, new ObjectId(id));
 			return "";
 		});
-		//get all available likes in mongo
+		// get all available likes in mongo
 		get("/allLikes", (request, response) -> {
 			ArticleService as = new ArticleService(mc);
 			return as.getArticles();
 		});
 
-		//get full user profile from user's id
+		// get full user profile from user's id
 		get("/getProfile/:profileId", (request, response) -> {
 			String id = request.params(":profileId");
 			MongoCollection<Document> col = ps.getCollection("profile");
@@ -174,8 +200,8 @@ public class Main {
 			}
 
 		});
-		//login a user, with a sign in credential in the post body
-		//return a user id from a username and password
+		// login a user, with a sign in credential in the post body
+		// return a user id from a username and password
 		post("/login", (request, response) -> {
 			GsonWrapper gw = new GsonWrapper();
 			Gson g = gw.getGson();
@@ -201,8 +227,8 @@ public class Main {
 			}
 			return "false";
 		});
-		
-		//register new user if username is unique
+
+		// register new user if username is unique
 		post("/addProfile", (request, response) -> {
 			GsonWrapper gw = new GsonWrapper();
 			Gson g = gw.getGson();
@@ -230,11 +256,9 @@ public class Main {
 			return dbo.get("_id").toString();
 		});
 
-	/*
-	 * unimplemented post method
-		post("/changePassword", (request, response) -> {
-			request.body();
-			return "";
-		});*/
+		/*
+		 * unimplemented post method post("/changePassword", (request, response)
+		 * -> { request.body(); return ""; });
+		 */
 	}
 }

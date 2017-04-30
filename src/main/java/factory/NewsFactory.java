@@ -31,7 +31,7 @@ public class NewsFactory {
         }
 		executor.shutdown();
 		try {
-			executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+			executor.awaitTermination(120, TimeUnit.NANOSECONDS);
 		} catch (InterruptedException e) {
 			System.out.println("Thread Broken");
 		}

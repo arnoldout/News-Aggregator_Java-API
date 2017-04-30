@@ -87,21 +87,21 @@ private MongoCollection<Document> col;
 		tagsCol.deleteMany(Filters.in("_id", id));
 	}
 	
-	//get tags that have no assigned articles
-	public List<ObjectId> getEmptyArticles()
-	{
-		FindIterable<Document> allTags = getAllArticles();
-		List<ObjectId> emptyTags = new ArrayList<ObjectId>();
-		for(Document d : allTags)
-		{
-			ArrayList<?> articles = (ArrayList<?>) d.get("articles");
-			if(articles.isEmpty())
-			{
-				emptyTags.add((ObjectId) d.get("_id"));
-			}
-		}
-		return emptyTags;
-	}
+//	//get tags that have no assigned articles
+//	public List<ObjectId> getEmptyArticles()
+//	{
+//		FindIterable<Document> allTags = getAllArticles();
+//		List<ObjectId> emptyTags = new ArrayList<ObjectId>();
+//		for(Document d : allTags)
+//		{
+//			ArrayList<?> articles = (ArrayList<?>) d.get("articles");
+//			if(articles.isEmpty())
+//			{
+//				emptyTags.add((ObjectId) d.get("_id"));
+//			}
+//		}
+//		return emptyTags;
+//	}
 	//remove article from mongo
 	public void removeArticle(Story story)
 	{

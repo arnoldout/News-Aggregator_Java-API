@@ -1,13 +1,11 @@
 package main.java;
 
 import static com.mongodb.client.model.Filters.eq;
-import static spark.Spark.get;
-import static spark.Spark.post;
+import static spark.Spark.*;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Queue;
@@ -45,7 +43,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		// for running locally, remove this port line
-		// port(Integer.valueOf(System.getenv("PORT")));
+		port(Integer.valueOf(System.getenv("PORT")));
 
 		// mongo connection string
 		MongoConnection mc = new MongoConnection(

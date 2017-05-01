@@ -13,7 +13,7 @@ import org.w3c.dom.NodeList;
 public class PolygonDoc extends XMLDoc {
 
 	//link to polygon rss feed
-	public final String url = "http://www.polygon.com/rss/index.xml";
+	public final String url = "https://www.polygon.com/rss/index.xml";
 
 	//parse rss feed
 	@Override
@@ -30,6 +30,7 @@ public class PolygonDoc extends XMLDoc {
 			String img = (eElement.getElementsByTagName("content").item(0).getTextContent());
 			String[] parts = img.split("\"");
 			item.setImgUri(parts[3]);
+			item.setDescription("No Description Provided");
 			//no categories, word cloud needed
 			super.add(item);
 		}

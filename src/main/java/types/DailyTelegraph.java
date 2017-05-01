@@ -32,8 +32,12 @@ public class DailyTelegraph extends XMLDoc {
 					Story item = new Story(entry.getLink());
 					item.setDescription("No Description Provided");
 					item.setTitle(entry.getTitle());
-					item.setImgUri(entry.getEnclosures().get(0).getUrl());
-					super.add(item);
+					if(!entry.getEnclosures().isEmpty()){
+						//dont add item if it doesn't have an image
+						item.setImgUri(entry.getEnclosures().get(0).getUrl());
+						super.add(item);	
+					}
+					
 				}
 
 			} catch (MalformedURLException e) {

@@ -1,9 +1,19 @@
 package main.java.types;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import com.rometools.rome.feed.synd.SyndEntry;
+import com.rometools.rome.feed.synd.SyndFeed;
+import com.rometools.rome.io.FeedException;
+import com.rometools.rome.io.SyndFeedInput;
 
 /*
 * XML Document
@@ -13,24 +23,52 @@ import org.w3c.dom.NodeList;
 */
 public class NYTDoc extends XMLDoc {
 
-	//link to nyt rss most viewed stories rss feed
+	// link to nyt rss most viewed stories rss feed
 	public final String url = "http://rss.nytimes.com/services/xml/rss/nyt/MostViewed.xml";
 
-	//parse the rss feed
+	public String findImage(String url) throws IOException {
+		Document document = Jsoup.connect(url).get();
+		Elements element = document.getElementsByTag("img");
+		for (Element e : element) {
+			if(e.attr("src").startsWith("https://static01.nyt.com/images/")) 
+			{		
+				return e.attr("src");
+			}
+		}
+		return "";
+	}
+
+	// parse the rss feed
 	@Override
 	public void parseXml() {
-		Document xmlReader = getXML(this.url);
+		try {
+			URL feedSource = new URL(url);
 
-		NodeList nList = xmlReader.getElementsByTagName("item");
+			SyndFeedInput input = new SyndFeedInput();
+			SyndFeed feed = input.build(new InputStreamReader(feedSource.openStream()));
 
-		for (int temp = 0; temp < nList.getLength(); temp++) {
-			Node nNode = nList.item(temp);
-			Element eElement = (Element) nNode;
-			Story item = new Story(eElement.getElementsByTagName("guid").item(0).getTextContent()+"?smid=fb-nytimes&smtyp=cur");
-			item.setTitle(eElement.getElementsByTagName("title").item(0).getTextContent());
-			item.setDescription(eElement.getElementsByTagName("description").item(0).getTextContent());
-			item.setImgUri((eElement.getElementsByTagName("media:content").item(0)).getAttributes().getNamedItem("url").getNodeValue());
-			super.add(item);
+			List<SyndEntry> items = feed.getEntries();
+			for (SyndEntry entry : items) {
+				Story item = new Story(entry.getUri() + "?smid=fb-nytimes&smtyp=cur");
+				item.getUri().replace("?partner=rss&amp;emc=rss", "");
+				item.setDescription(entry.getDescription().getValue());
+				item.setTitle(entry.getTitle());
+				item.setImgUri(findImage(item.getUri()));
+				super.add(item);
+			}
+
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FeedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 }

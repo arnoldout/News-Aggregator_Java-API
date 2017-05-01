@@ -10,7 +10,6 @@ import java.util.concurrent.TimeUnit;
 import main.java.types.BBCDoc;
 import main.java.types.BangkokPost;
 import main.java.types.BloombergNews;
-import main.java.types.ChinaDailyWorldNews;
 import main.java.types.DailyTelegraph;
 import main.java.types.GetWLondonDoc;
 import main.java.types.LaTimes;
@@ -22,7 +21,7 @@ import main.java.types.XMLDoc;
 
 public class NewsFactory {
 	private List<XMLDoc> docs = new ArrayList<XMLDoc>(
-			Arrays.asList(new NYTDoc(), new PolygonDoc(), new BBCDoc(), new GetWLondonDoc(), new SkyNewsDoc(),
+			Arrays.asList(new PolygonDoc(),new NYTDoc(), new BBCDoc(), new GetWLondonDoc(), new SkyNewsDoc(),
 					new TheGuardianDoc(), new BloombergNews(), new DailyTelegraph(),
 					new BangkokPost(), new LaTimes()));
 
@@ -34,13 +33,13 @@ public class NewsFactory {
 		// loop through all xml files, and parse on a thread
 		for (XMLDoc d : docs) {
 			// parse the xml file in a thread
-			executor.submit(() -> {
+			//executor.submit(() -> {
 				d.parseXml();
-			});
+			//});
 		}
 		executor.shutdown();
 		try {
-			executor.awaitTermination(120, TimeUnit.NANOSECONDS);
+			executor.awaitTermination(Integer.MAX_VALUE, TimeUnit.NANOSECONDS);
 		} catch (InterruptedException e) {
 			System.out.println("Thread Broken");
 		}

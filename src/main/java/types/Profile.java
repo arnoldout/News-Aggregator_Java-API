@@ -1,7 +1,9 @@
 package main.java.types;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -12,7 +14,7 @@ public class Profile {
 	private String username;
 	private String password;
 	private List<String> likes = new ArrayList<String>();
-	private List<String> history = new ArrayList<String>();
+	private Set<String> history = new HashSet<String>();
 
 	public Profile() {
 		super();
@@ -63,10 +65,10 @@ public class Profile {
 	public void addLink(String element) {
 		history.add(element);
 	}
-	public List<String> getHistory() {
+	public Set<String> getHistory() {
 		return history;
 	}
-	public void setHistory(List<String> history) {
+	public void setHistory(Set<String> history) {
 		this.history = history;
 	}
 }

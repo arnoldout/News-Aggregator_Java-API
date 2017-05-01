@@ -119,7 +119,7 @@ public class Main {
 					tags.put((String) doc2.get("name"), new ArrayBlockingQueue<Story>(360));
 				}
 				System.out.println("Current Tags size:" + tags.size());
-				for (XMLDoc d : nf.docs) {
+				for (XMLDoc d : nf.getParsedDocs()) {
 					for (Story s : d.getNewsItems()) {
 						HTMLDoc doc = new HTMLDoc();
 						doc.url = s.getUri();

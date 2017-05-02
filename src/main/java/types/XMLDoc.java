@@ -1,14 +1,15 @@
 package main.java.types;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
 //abstract class relating to the basic data that XML-RSS readers need
 public abstract class XMLDoc {
-	private List<Story> newsItems = new ArrayList<Story>();
+	private Queue<Story> newsItems = new ArrayBlockingQueue<Story>(360);
 
 	public abstract void parseXml();
 
@@ -24,10 +25,10 @@ public abstract class XMLDoc {
 		}
 	}
 
-	public List<Story> getNewsItems() {
+	public Queue<Story> getNewsItems() {
 		return newsItems;
 	}
-	public void setNewsItems(List<Story> newsItems) {
+	public void setNewsItems(Queue<Story> newsItems) {
 		this.newsItems = newsItems;
 	}
 

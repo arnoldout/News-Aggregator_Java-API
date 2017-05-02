@@ -55,4 +55,28 @@ public class ProfileService extends MongoService {
 		
 		col.replaceOne(eq("_id", p.getId()), p.makeDocument());
 	}
+	//increment the counter associated with the tag
+		//initialize a counter and add the tag, if none present
+		public void decrementTag(String tagName, ObjectId oid)
+		{	 
+			Profile p = getProfile(oid);
+			GsonWrapper gw = new GsonWrapper();
+			Gson g = gw.getGson();
+			MongoCollection<Document> keyPairs = super.getCollection("tagPairs");
+			for(String id : p.getLikes())
+			{
+				Document tagPair = (Document) keyPairs.find(eq("_id", new ObjectId(id))).first();
+				TagViewPair tvp = g.fromJson(tagPair.toJson(), TagViewPair.class);
+				if(tvp.getTag().equals(tagName)){
+					tvp.decrementViewCount();
+					keyPairs.replaceOne(eq("_id", tvp.get_id()), tvp.makeDocument());
+					return;
+				}
+			}
+			TagViewPair kvp = new TagViewPair(new ObjectId(), tagName, 1);
+			keyPairs.insertOne(kvp.makeDocument());
+			p.addLike(kvp.get_id());
+			
+			col.replaceOne(eq("_id", p.getId()), p.makeDocument());
+		}
 }

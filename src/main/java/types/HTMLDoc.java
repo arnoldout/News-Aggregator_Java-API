@@ -96,8 +96,7 @@ public class HTMLDoc {
 			}
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Failed to Parse :"+this.url);
 			return null;
 		}
 		// convert array to map

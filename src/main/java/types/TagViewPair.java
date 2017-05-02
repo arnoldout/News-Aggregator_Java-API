@@ -39,6 +39,10 @@ public class TagViewPair {
 	{
 		this.viewCount++;
 	}
+	public void decrementViewCount()
+	{
+		this.viewCount--;
+	}
 	public Document makeDocument()
 	{
 		Document d = new Document();

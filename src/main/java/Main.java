@@ -131,7 +131,7 @@ public class Main {
 					}
 				}
 				System.out.println("Current Tags size:" + tags.size());
-				
+
 				for (Entry<String, Queue<Story>> entry : tags.entrySet()) {
 					// get or add and get tag object
 					String key = entry.getKey();
@@ -174,12 +174,19 @@ public class Main {
 			ps.incrementTag(like, new ObjectId(id));
 			return "";
 		});
+		// add like to account with user's id
+		get("/remLike/:id/:like", (request, response) -> {
+			String id = request.params(":id");
+			String like = request.params(":like");
+			ps.decrementTag(like, new ObjectId(id));
+			return "";
+		});
 		// get all available likes in mongo
 		get("/allLikes", (request, response) -> {
 			ArticleService as = new ArticleService(mc);
 			return as.getArticles();
 		});
-		
+
 		// get all available likes in mongo
 		get("/readArticle/:id/:url", (request, response) -> {
 			Profile p = ps.getProfile(new ObjectId(request.params(":id")));

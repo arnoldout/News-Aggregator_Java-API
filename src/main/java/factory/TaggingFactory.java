@@ -5,11 +5,11 @@ import static com.mongodb.client.model.Filters.eq;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Queue;
-import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import org.bson.Document;
@@ -29,8 +29,15 @@ import main.java.types.Profile;
 import main.java.types.Story;
 import main.java.types.TagViewPair;
 
-public class TaggingFactory {
 
+public class TaggingFactory {
+	
+	static class PQsort implements Comparator<TagViewPair> {
+		 
+		public int compare(TagViewPair one, TagViewPair two) {
+			return two.getViewCount() - one.getViewCount();
+		}
+	}
 	private TaggingService ts;
 	private ArticleService as;
 	private ProfileService ps;
@@ -69,36 +76,51 @@ public class TaggingFactory {
 		GsonWrapper gw = new GsonWrapper();
 		Gson g = gw.getGson();
 		MongoCollection<Document> keyPairs = mc.getDb().getCollection("tagPairs");
-		Set<String> uniqueUris = new HashSet<String>();
-		List<TagViewPair> tvps = new ArrayList<TagViewPair>();
+		Map<JSONObject, Integer> uniqueUris = new HashMap<JSONObject, Integer>();
+		PQsort pqs = new PQsort();
+		Queue<TagViewPair> tvps = new PriorityQueue<TagViewPair>(1000, pqs);
+		//looping over user's likes
 		for (String id : p.getLikes()) {
+			//getting tag pair from mongo, deserializing down to object
 			Document tagPair = (Document) keyPairs.find(eq("_id", new ObjectId(id))).first();
 			TagViewPair tvp = g.fromJson(tagPair.toJson(), TagViewPair.class);
+			//add to tags priority queue
 			tvps.add(tvp);
+			//get tag object by name found in tvp, will hold all available articles 
 			Document d = (Document) ts.getCol().find(eq("name", tvp.getTag())).first();
 			if (d != null) {
 				@SuppressWarnings("unchecked")
+				//get all the articles
 				List<ObjectId> tagArticles = (List<ObjectId>) d.get("articles");
+				//loop over article ids
 				for (ObjectId oid : tagArticles) {
+					//make sure user hasn't read story before
 					if(!p.getHistory().contains(oid.toString()))
 					{
+						//get article content, store in map if unique
 						JSONObject jo = new JSONObject(as.getMongoDocument(oid).toJson());
-						if (uniqueUris.add((String) jo.get("uri"))) {
-							ja.put(jo);
+						if (!uniqueUris.containsKey(jo)) {
+							//ja.put(jo);
+							uniqueUris.put(jo, tvp.getViewCount());
+						}
+						else{
+							uniqueUris.put(jo, uniqueUris.get(jo)+tvp.getViewCount());
 						}
 					}
 				}
 			}
 		}
-		Collections.sort(tvps, new Comparator<TagViewPair>() {
-			@Override
-			public int compare(TagViewPair o1, TagViewPair o2) {
-				return Integer.compare(o2.getViewCount(), o1.getViewCount());
-			}
-		});
+		//sort map by value, put json array
+		List<JSONObject> keys=new ArrayList<JSONObject>(uniqueUris.keySet());
+		List<Integer> values =new ArrayList<Integer>(uniqueUris.values());
+		
+		Collections.sort(keys, Comparator.comparing(item -> values.indexOf(item)));
+		for (JSONObject j : keys) {
+			ja.put(j);
+		}
 		p.clearLikes();
-		for (TagViewPair tvp : tvps) {
-			p.addLike(tvp.get_id());
+		while(!tvps.isEmpty()) {
+			p.addLike(tvps.poll().get_id());
 		}
 		ps.updateProfile(p);
 		return ja;

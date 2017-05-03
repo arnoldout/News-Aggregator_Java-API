@@ -76,7 +76,7 @@ public class TaggingFactory {
 		GsonWrapper gw = new GsonWrapper();
 		Gson g = gw.getGson();
 		MongoCollection<Document> keyPairs = mc.getDb().getCollection("tagPairs");
-		Map<JSONObject, Integer> uniqueUris = new HashMap<JSONObject, Integer>();
+		Map<String, Integer> uniqueUris = new HashMap<String, Integer>();
 		PQsort pqs = new PQsort();
 		Queue<TagViewPair> tvps = new PriorityQueue<TagViewPair>(1000, pqs);
 		//looping over user's likes
@@ -99,23 +99,23 @@ public class TaggingFactory {
 					{
 						//get article content, store in map if unique
 						JSONObject jo = new JSONObject(as.getMongoDocument(oid).toJson());
-						if (!uniqueUris.containsKey(jo)) {
+						if (!uniqueUris.containsKey(jo.toString())) {
 							//ja.put(jo);
-							uniqueUris.put(jo, tvp.getViewCount());
+							uniqueUris.put(jo.toString(), tvp.getViewCount());
 						}
 						else{
-							uniqueUris.put(jo, uniqueUris.get(jo)+tvp.getViewCount());
+							uniqueUris.put(jo.toString(), uniqueUris.get(jo.toString())+tvp.getViewCount());
 						}
 					}
 				}
 			}
 		}
 		//sort map by value, put json array
-		List<JSONObject> keys=new ArrayList<JSONObject>(uniqueUris.keySet());
+		List<String> keys=new ArrayList<String>(uniqueUris.keySet());
 		List<Integer> values =new ArrayList<Integer>(uniqueUris.values());
 		Collections.sort(keys, Comparator.comparing(item -> values.indexOf(item)));
-		for (JSONObject j : keys) {
-			ja.put(j);
+		for (String j : keys) {
+			ja.put(new JSONObject(j));
 		}
 		p.clearLikes();
 		while(!tvps.isEmpty()) {

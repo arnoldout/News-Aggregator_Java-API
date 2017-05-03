@@ -113,7 +113,6 @@ public class TaggingFactory {
 		//sort map by value, put json array
 		List<JSONObject> keys=new ArrayList<JSONObject>(uniqueUris.keySet());
 		List<Integer> values =new ArrayList<Integer>(uniqueUris.values());
-		Collections.sort(values);
 		Collections.sort(keys, Comparator.comparing(item -> values.indexOf(item)));
 		for (JSONObject j : keys) {
 			ja.put(j);

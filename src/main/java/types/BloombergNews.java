@@ -1,36 +1,57 @@
 package main.java.types;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-/*
- * XML Document
- * gets data from the BBC Rss feed, 
- * Converts info into story objects
- * stores into list of stories
- */
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
+
+import com.rometools.rome.feed.synd.SyndEntry;
+import com.rometools.rome.feed.synd.SyndFeed;
+import com.rometools.rome.io.FeedException;
+import com.rometools.rome.io.SyndFeedInput;
 
 public class BloombergNews extends XMLDoc {
-	//link to bbc rss feed
+	// link to bbc rss feed
 	public final String url = "https://www.bloomberg.com/politics/feeds/site.xml";
 
-	//parse rss feed for stories
+	// parse rss feed for stories
 	@Override
 	public void parseXml() {
-		Document xmlReader = getXML(this.url);
+		try {
+			URL feedSource = new URL(url);
 
-		NodeList nList = xmlReader.getElementsByTagName("item");
+			SyndFeedInput input = new SyndFeedInput();
+			SyndFeed feed = input.build(new InputStreamReader(feedSource.openStream()));
 
-		for (int temp = 0; temp < nList.getLength(); temp++) {
-			Node nNode = nList.item(temp);
-			Element eElement = (Element) nNode;
-			Story item = new Story(eElement.getElementsByTagName("guid").item(0).getTextContent());
-			item.setTitle(eElement.getElementsByTagName("title").item(0).getTextContent());
+			List<SyndEntry> items = feed.getEntries();
+			for (SyndEntry entry : items) {
+				Story item = new Story(entry.getUri());
+				try{
+				item.setDescription(entry.getDescription().getValue());
+				}
+				catch(NullPointerException e)
+				{
+					item.setDescription("No Description Provided");
+				}
+				item.setTitle(entry.getTitle());
 
-			item.setDescription(eElement.getElementsByTagName("description").item(0).getTextContent());
-			item.setImgUri((eElement.getElementsByTagName("media:content").item(0)).getAttributes().getNamedItem("url").getNodeValue());
-			super.add(item);
+				item.setImgUri(entry.getForeignMarkup().get(0).getAttribute("url").getValue());
+				super.add(item);
+			}
+
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FeedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 }

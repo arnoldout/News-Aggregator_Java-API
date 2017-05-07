@@ -43,7 +43,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		// for running locally, remove this port line
-		port(Integer.valueOf(System.getenv("PORT")));
+		//port(Integer.valueOf(System.getenv("PORT")));
 
 		// mongo connection string
 		MongoConnection mc = new MongoConnection(

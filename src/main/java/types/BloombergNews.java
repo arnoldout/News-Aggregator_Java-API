@@ -35,8 +35,14 @@ public class BloombergNews extends XMLDoc {
 					item.setDescription("No Description Provided");
 				}
 				item.setTitle(entry.getTitle());
-
-				item.setImgUri(entry.getForeignMarkup().get(0).getAttribute("url").getValue());
+				try{
+					item.setImgUri(entry.getForeignMarkup().get(0).getAttribute("url").getValue());
+				}
+				catch(IndexOutOfBoundsException e)
+				{
+					//no image found
+					item.setImgUri("https://media.glassdoor.com/sqll/3096/bloomberg-l-p-squarelogo-1485356219895.png");
+				}
 				super.add(item);
 			}
 

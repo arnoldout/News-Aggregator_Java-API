@@ -13,6 +13,7 @@ import main.java.types.BloombergNews;
 import main.java.types.DailyTelegraph;
 import main.java.types.GetWLondonDoc;
 import main.java.types.LaTimes;
+import main.java.types.NPRDoc;
 import main.java.types.NYTDoc;
 import main.java.types.PolygonDoc;
 import main.java.types.SkyNewsDoc;
@@ -21,7 +22,7 @@ import main.java.types.XMLDoc;
 
 public class NewsFactory {
 	private List<XMLDoc> docs = new ArrayList<XMLDoc>(
-			Arrays.asList(new PolygonDoc(),new NYTDoc(), new BBCDoc(), new GetWLondonDoc(), new SkyNewsDoc(),
+			Arrays.asList(new NPRDoc(),new PolygonDoc(),new NYTDoc(), new BBCDoc(), new GetWLondonDoc(), new SkyNewsDoc(),
 					new TheGuardianDoc(), new BloombergNews(), new DailyTelegraph(),
 					new BangkokPost(), new LaTimes()));
 

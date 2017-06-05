@@ -35,7 +35,17 @@ public class NewsFactory {
 		for (XMLDoc d : docs) {
 			// parse the xml file in a thread
 			//executor.submit(() -> {
+			try{
 				d.parseXml();
+			}
+			catch(NullPointerException e)
+			{
+				e.printStackTrace();
+			}
+			catch(IndexOutOfBoundsException e)
+			{
+				e.printStackTrace();
+			}
 			//});
 		}
 		executor.shutdown();

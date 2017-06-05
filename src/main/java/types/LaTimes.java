@@ -25,11 +25,18 @@ public class LaTimes extends XMLDoc{
 
 			List<SyndEntry> items = feed.getEntries();
 			for (SyndEntry entry : items) {
-				Story item = new Story(entry.getUri());
-				item.setDescription(entry.getDescription().getValue());
-				item.setTitle(entry.getTitle());
-				item.setImgUri(entry.getForeignMarkup().get(0).getAttribute("url").getValue());
-				super.add(item);
+				try{
+					Story item = new Story(entry.getUri());
+					item.setDescription(entry.getDescription().getValue());
+					item.setTitle(entry.getTitle());
+					item.setImgUri(entry.getForeignMarkup().get(0).getAttribute("url").getValue());
+					super.add(item);
+				}
+				catch(Exception e)
+				{
+					e.printStackTrace();
+				}
+				
 			}
 
 		} catch (MalformedURLException e) {

@@ -25,13 +25,15 @@ public class PolygonDoc extends XMLDoc {
 		for (int temp = 0; temp < nList.getLength(); temp++) {
 			Node nNode = nList.item(temp);
 			Element eElement = (Element) nNode;
-			Story item = new Story(eElement.getElementsByTagName("id").item(0).getTextContent());
-			item.setTitle(eElement.getElementsByTagName("title").item(0).getTextContent());
+			
 			String img = (eElement.getElementsByTagName("content").item(0).getTextContent());
 			String[] parts = img.split("\"");
-			item.setImgUri(parts[3]);
-			item.setDescription("No Description Provided");
 			//no categories, word cloud needed
+			NeverNullString uri = new NeverNullString(eElement.getElementsByTagName("id").item(0).getTextContent());
+			NeverNullString title = new NeverNullString(eElement.getElementsByTagName("title").item(0).getTextContent());
+			NeverNullString desc = new NeverNullString("No Description Provided");
+			NeverNullString imgUri = new NeverNullString(parts[3], "https://s3.amazonaws.com/assets.sbnation.com/polygon/polygon-mark.png");
+			Story item = new Story(uri, title, desc, imgUri);
 			super.add(item);
 		}
 	}

@@ -22,13 +22,17 @@ public class Story {
     private long ldt;
     //associated image to article
     private String imgUri;
-    public Story(String uri) {
+    public Story(NeverNullString uri, NeverNullString title, NeverNullString desc, NeverNullString imgUri) {
 		super();
-		this.uri = uri;
+		this.uri = uri.getString();
+		this.title = title.getString();
+		this.description = desc.getString();
+		this.imgUri = imgUri.getString();
 		this._id = new ObjectId();
 		Calendar c = Calendar.getInstance();
 		this.setLdt(c.getTime().getTime());
 	} 
+    
     public String getTitle() {
 		return title;
 	}

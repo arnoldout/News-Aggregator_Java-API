@@ -26,11 +26,11 @@ public class BBCDoc extends XMLDoc {
 		for (int temp = 0; temp < nList.getLength(); temp++) {
 			Node nNode = nList.item(temp);
 			Element eElement = (Element) nNode;
-			Story item = new Story(eElement.getElementsByTagName("link").item(0).getTextContent());
-			item.setTitle(eElement.getElementsByTagName("title").item(0).getTextContent());
-
-			item.setDescription(eElement.getElementsByTagName("description").item(0).getTextContent());
-			item.setImgUri((eElement.getElementsByTagName("media:thumbnail").item(0)).getAttributes().getNamedItem("url").getNodeValue());
+			NeverNullString uri = new NeverNullString(eElement.getElementsByTagName("link").item(0).getTextContent());
+			NeverNullString title = new NeverNullString(eElement.getElementsByTagName("title").item(0).getTextContent());
+			NeverNullString desc = new NeverNullString(eElement.getElementsByTagName("description").item(0).getTextContent());
+			NeverNullString imgUri = new NeverNullString((eElement.getElementsByTagName("media:thumbnail").item(0)).getAttributes().getNamedItem("url").getNodeValue());
+			Story item = new Story(uri, title, desc, imgUri);
 			super.add(item);
 		}
 

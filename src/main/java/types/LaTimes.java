@@ -26,10 +26,17 @@ public class LaTimes extends XMLDoc{
 			List<SyndEntry> items = feed.getEntries();
 			for (SyndEntry entry : items) {
 				try{
-					Story item = new Story(entry.getUri());
-					item.setDescription(entry.getDescription().getValue());
-					item.setTitle(entry.getTitle());
-					item.setImgUri(entry.getForeignMarkup().get(0).getAttribute("url").getValue());
+					NeverNullString uri = new NeverNullString(entry.getUri());
+					NeverNullString desc = new NeverNullString(entry.getDescription().getValue());
+					NeverNullString title = new NeverNullString(entry.getTitle());
+					NeverNullString img;
+					if(!entry.getForeignMarkup().isEmpty()){
+						img = new NeverNullString(entry.getForeignMarkup().get(0).getAttribute("url").getValue());
+					}
+					else{
+						img = new NeverNullString("https://pbs.twimg.com/profile_images/546329819919560704/XMWy2Z50.jpeg");
+					}
+					Story item = new Story(uri, title, desc, img);
 					super.add(item);
 				}
 				catch(Exception e)

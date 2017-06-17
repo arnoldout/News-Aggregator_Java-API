@@ -31,10 +31,11 @@ public class GetWLondonDoc extends XMLDoc{
 
 			List<SyndEntry> items = feed.getEntries();
 			for (SyndEntry entry : items) {
-				Story item = new Story(entry.getUri());
-				item.setDescription(entry.getDescription().getValue());
-				item.setTitle(entry.getTitle());
-				item.setImgUri(entry.getEnclosures().get(0).getUrl());
+				NeverNullString uri = new NeverNullString(entry.getUri());
+				NeverNullString title = new NeverNullString(entry.getTitle());
+				NeverNullString desc = new NeverNullString(entry.getDescription().getValue(), "No Description Provided");
+				NeverNullString imgUri = new NeverNullString(entry.getEnclosures().get(0).getUrl());
+				Story item = new Story(uri, title, desc, imgUri);
 				super.add(item);
 			}
 

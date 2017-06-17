@@ -27,16 +27,11 @@ public class NPRDoc extends XMLDoc{
 
 			List<SyndEntry> items = feed.getEntries();
 			for (SyndEntry entry : items) {
-				Story item = new Story(entry.getLink());
-				item.setDescription(entry.getDescription().getValue());
-				item.setTitle(entry.getTitle());
-				try{
-					item.setImgUri(entry.getContents().get(0).getValue().split("'")[1]);
-				}
-				catch(NullPointerException e )
-				{
-					item.setImgUri("http://www.thedailysheeple.com/wp-content/uploads/2012/09/npr.jpeg");
-				}
+				NeverNullString uri = new NeverNullString(entry.getLink());
+				NeverNullString title = new NeverNullString(entry.getTitle());
+				NeverNullString desc = new NeverNullString(entry.getDescription().getValue(), "No Description Provided");
+				NeverNullString imgUri = new NeverNullString(entry.getContents().get(0).getValue().split("'")[1], "http://www.thedailysheeple.com/wp-content/uploads/2012/09/npr.jpeg");
+				Story item = new Story(uri, title, desc, imgUri);
 				super.add(item);
 			}
 

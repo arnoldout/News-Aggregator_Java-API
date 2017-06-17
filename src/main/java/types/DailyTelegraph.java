@@ -32,11 +32,15 @@ public class DailyTelegraph extends XMLDoc {
 					NeverNullString uri = new NeverNullString(entry.getLink());
 					NeverNullString title = new NeverNullString(entry.getTitle());
 					NeverNullString desc = new NeverNullString("No Description Provided");
-					NeverNullString imgUri = new NeverNullString(entry.getEnclosures().get(0).getUrl(),"http://www.telegraph.co.uk/template/ver1-0/i/telegraphFacebook.jpg");
+					NeverNullString imgUri;
+					if(!entry.getEnclosures().isEmpty()){
+						imgUri = new NeverNullString(entry.getEnclosures().get(0).getUrl(),"http://www.telegraph.co.uk/template/ver1-0/i/telegraphFacebook.jpg");
+					}
+					else{
+						imgUri = new NeverNullString("http://www.telegraph.co.uk/template/ver1-0/i/telegraphFacebook.jpg");
+					}
 					Story item = new Story(uri, title, desc, imgUri);
-					super.add(item);	
-					
-					
+					super.add(item);
 				}
 
 			} catch (MalformedURLException e) {

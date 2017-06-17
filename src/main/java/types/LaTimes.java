@@ -29,7 +29,13 @@ public class LaTimes extends XMLDoc{
 					NeverNullString uri = new NeverNullString(entry.getUri());
 					NeverNullString desc = new NeverNullString(entry.getDescription().getValue());
 					NeverNullString title = new NeverNullString(entry.getTitle());
-					NeverNullString img = new NeverNullString(entry.getForeignMarkup().get(0).getAttribute("url").getValue());
+					NeverNullString img;
+					if(!entry.getForeignMarkup().isEmpty()){
+						img = new NeverNullString(entry.getForeignMarkup().get(0).getAttribute("url").getValue());
+					}
+					else{
+						img = new NeverNullString("https://pbs.twimg.com/profile_images/546329819919560704/XMWy2Z50.jpeg");
+					}
 					Story item = new Story(uri, title, desc, img);
 					super.add(item);
 				}

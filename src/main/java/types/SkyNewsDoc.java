@@ -26,12 +26,14 @@ public class SkyNewsDoc extends XMLDoc {
 		for (int temp = 0; temp < nList.getLength(); temp++) {
 			Node nNode = nList.item(temp);
 			Element eElement = (Element) nNode;
-			Story item = new Story(eElement.getElementsByTagName("guid").item(0).getTextContent());
-			item.setTitle(eElement.getElementsByTagName("title").item(0).getTextContent());
-			item.setDescription(eElement.getElementsByTagName("description").item(0).getTextContent());
+			
 			String img = ((eElement.getElementsByTagName("media:thumbnail").item(0)).getAttributes().getNamedItem("url").getNodeValue());			//no categories, word cloud needed
 			img = img.replace("70x70", "1096x616");
-			item.setImgUri(img);
+			NeverNullString uri = new NeverNullString(eElement.getElementsByTagName("guid").item(0).getTextContent());
+			NeverNullString title = new NeverNullString(eElement.getElementsByTagName("title").item(0).getTextContent());
+			NeverNullString desc = new NeverNullString(eElement.getElementsByTagName("description").item(0).getTextContent(), "No Description Provided");
+			NeverNullString imgUri = new NeverNullString(img, "https://pbs.twimg.com/profile_images/596404466200489984/cZjPh8eP_400x400.png");
+			Story item = new Story(uri, title, desc, imgUri);
 			super.add(item);
 		}
 	}

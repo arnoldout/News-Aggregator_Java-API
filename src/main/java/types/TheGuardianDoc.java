@@ -26,11 +26,12 @@ public class TheGuardianDoc extends XMLDoc {
 		for (int temp = 0; temp < nList.getLength(); temp++) {
 			Node nNode = nList.item(temp);
 			Element eElement = (Element) nNode;
-			Story item = new Story(eElement.getElementsByTagName("guid").item(0).getTextContent());
-			item.setTitle(eElement.getElementsByTagName("title").item(0).getTextContent());
-			item.setDescription(eElement.getElementsByTagName("description").item(0).getTextContent().replaceAll("\\<.*?>",""));
-			item.setImgUri((eElement.getElementsByTagName("media:content").item(1)).getAttributes().getNamedItem("url").getNodeValue());	
 			//no categories, word cloud needed
+			NeverNullString uri = new NeverNullString(eElement.getElementsByTagName("guid").item(0).getTextContent());
+			NeverNullString title = new NeverNullString(eElement.getElementsByTagName("title").item(0).getTextContent());
+			NeverNullString desc = new NeverNullString(eElement.getElementsByTagName("description").item(0).getTextContent().replaceAll("\\<.*?>",""), "No Description Provided");
+			NeverNullString imgUri = new NeverNullString((eElement.getElementsByTagName("media:content").item(1)).getAttributes().getNamedItem("url").getNodeValue(),"http://icons.iconarchive.com/icons/martz90/circle/512/guardian-icon.png");
+			Story item = new Story(uri, title, desc, imgUri);
 			super.add(item);
 		}	
 	}

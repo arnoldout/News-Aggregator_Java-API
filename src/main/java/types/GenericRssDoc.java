@@ -32,11 +32,11 @@ public abstract class GenericRssDoc extends XMLDoc {
 
 				List<SyndEntry> items = feed.getEntries();
 				for (SyndEntry entry : items) {
-					Story item = new Story(entry.getUri());
-					item.setDescription(entry.getDescription().getValue());
-					item.setTitle(entry.getTitle());
-
-					item.setImgUri(findImage(item.getUri()));
+					NeverNullString uri = new NeverNullString(entry.getUri());
+					NeverNullString title = new NeverNullString(entry.getTitle());
+					NeverNullString desc = new NeverNullString(entry.getDescription().getValue(), "No Description Provided");
+					NeverNullString imgUri = new NeverNullString(findImage(uri.getString()));
+					Story item = new Story(uri, title, desc, imgUri);
 					super.add(item);
 				}
 

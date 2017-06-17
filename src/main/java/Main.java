@@ -1,8 +1,13 @@
 package main.java;
 
 import static com.mongodb.client.model.Filters.eq;
-import static spark.Spark.*;
+import static spark.Spark.get;
+import static spark.Spark.post;
+import static spark.SparkBase.port;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -96,6 +101,19 @@ public class Main {
 				/*
 				 * Every hour, check rss feeds for new content
 				 */
+				 try {
+					 URL obj = new URL("https://dailyfeed.herokuapp.com/Feed.zul");
+					 HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+						// optional default is GET
+						con.setRequestMethod("GET");
+						con.setRequestProperty("User-Agent", "Mozilla/5.0");
+
+						int responseCode = con.getResponseCode();
+						System.out.println("\nSending 'GET' request to URL : " + "https://dailyfeed.herokuapp.com/Feed.zul");
+						System.out.println("Response Code : " + responseCode);
+				    } catch (IOException exception) {
+				       System.out.println("No Ping");
+				    }
 				Set<String> articles = new HashSet<String>();
 				ArticleService as = new ArticleService(mc);
 				MongoCollection<Document> col = as.getCollection("Article");

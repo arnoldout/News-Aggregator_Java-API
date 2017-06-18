@@ -30,7 +30,14 @@ public class BloombergNews extends XMLDoc {
 				NeverNullString uri = new NeverNullString(entry.getUri());
 				NeverNullString title = new NeverNullString(entry.getTitle());
 				NeverNullString desc = new NeverNullString(entry.getDescription().getValue(), "No Description Provided");
-				NeverNullString imgUri = new NeverNullString(entry.getForeignMarkup().get(0).getAttribute("url").getValue(), "https://media.glassdoor.com/sqll/3096/bloomberg-l-p-squarelogo-1485356219895.png");
+				NeverNullString imgUri;
+				if(!entry.getForeignMarkup().isEmpty())
+				{
+					imgUri = new NeverNullString(entry.getForeignMarkup().get(0).getAttribute("url").getValue(), "https://media.glassdoor.com/sqll/3096/bloomberg-l-p-squarelogo-1485356219895.png");
+				}
+				else{
+					imgUri = new NeverNullString("https://media.glassdoor.com/sqll/3096/bloomberg-l-p-squarelogo-1485356219895.png");
+				}
 				Story item = new Story(uri, title, desc, imgUri);
 				super.add(item);
 			}

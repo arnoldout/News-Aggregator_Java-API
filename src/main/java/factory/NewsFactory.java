@@ -22,9 +22,8 @@ import main.java.types.XMLDoc;
 
 public class NewsFactory {
 	private List<XMLDoc> docs = new ArrayList<XMLDoc>(
-			Arrays.asList(new NPRDoc(),new PolygonDoc(),new NYTDoc(), new BBCDoc(), new GetWLondonDoc(), new SkyNewsDoc(),
-					new TheGuardianDoc(), new BloombergNews(), new DailyTelegraph(),
-					new BangkokPost(), new LaTimes()));
+			Arrays.asList(new BangkokPost(), new NPRDoc(),new PolygonDoc(),new NYTDoc(), new BBCDoc(), new GetWLondonDoc(), new SkyNewsDoc(),
+					new TheGuardianDoc(), new BloombergNews(), new DailyTelegraph(), new LaTimes()));
 
 	public void getDocs() {
 		// docs size wont ever be massive, it will only ever be the amount of

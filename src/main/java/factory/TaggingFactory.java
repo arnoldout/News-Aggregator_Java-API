@@ -3,6 +3,7 @@ package main.java.factory;
 import static com.mongodb.client.model.Filters.eq;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -29,15 +30,15 @@ import main.java.types.Profile;
 import main.java.types.Story;
 import main.java.types.TagViewPair;
 
-
 public class TaggingFactory {
-	
+
 	static class PQsort implements Comparator<TagViewPair> {
-		 
+
 		public int compare(TagViewPair one, TagViewPair two) {
 			return two.getViewCount() - one.getViewCount();
 		}
 	}
+
 	private TaggingService ts;
 	private ArticleService as;
 	private ProfileService ps;
@@ -55,7 +56,7 @@ public class TaggingFactory {
 		// generate tags from article
 		// story now on mongo here
 		as.addArticle(story);
-		
+
 		try {
 			for (String str : story.getCategories()) {
 				if (!tags.containsKey(str)) {
@@ -79,49 +80,67 @@ public class TaggingFactory {
 		Map<String, Integer> uniqueUris = new HashMap<String, Integer>();
 		PQsort pqs = new PQsort();
 		Queue<TagViewPair> tvps = new PriorityQueue<TagViewPair>(1000, pqs);
-		//looping over user's likes
+		// looping over user's likes
 		for (String id : p.getLikes()) {
-			//getting tag pair from mongo, deserializing down to object
+			// getting tag pair from mongo, deserializing down to object
 			Document tagPair = (Document) keyPairs.find(eq("_id", new ObjectId(id))).first();
 			TagViewPair tvp = g.fromJson(tagPair.toJson(), TagViewPair.class);
-			//add to tags priority queue
+
+			// add to tags priority queue
 			tvps.add(tvp);
-			//get tag object by name found in tvp, will hold all available articles 
+
+			// get tag object by name found in tvp, will hold all available
+			// articles
 			Document d = (Document) ts.getCol().find(eq("name", tvp.getTag())).first();
+			// get current time, store as constant for checking so all times
+			// checks are constant
+			Calendar c = Calendar.getInstance();
+			long currentTime = c.getTime().getTime();
 			if (d != null) {
 				@SuppressWarnings("unchecked")
-				//get all the articles
+				// get all the articles
 				List<ObjectId> tagArticles = (List<ObjectId>) d.get("articles");
-				//loop over article ids
+				// loop over article ids
 				for (ObjectId oid : tagArticles) {
-					//make sure user hasn't read story before
-					if(!p.getHistory().contains(oid.toString()))
-					{
-						//get article content, store in map if unique
-						JSONObject jo = new JSONObject(as.getMongoDocument(oid).toJson());
-						if (!uniqueUris.containsKey(jo.toString())) {
-							//ja.put(jo);
-							uniqueUris.put(jo.toString(), tvp.getViewCount());
-						}
-						else{
-							uniqueUris.put(jo.toString(), uniqueUris.get(jo.toString())+tvp.getViewCount());
+					// make sure user hasn't read story before
+					if (!p.getHistory().contains(oid.toString())) {
+						// get article content, store in map if unique
+						JSONObject currentStory = new JSONObject(as.getMongoDocument(oid).toJson());
+						// check if story has been added, increment the tags or
+						// set the tags view count
+						if (!uniqueUris.containsKey(currentStory.toString())) {
+							/*
+							 * use site for a few days, see how it goes
+							 * more than likely that 1000000 will need to be changed,
+							 * at this point its just a balancing act, how heavily I want to weight down old stories 
+							 * and promote new ones over tags, see how it goes
+							 */
+							long uploadTime = Long.parseLong((String) ((JSONObject) currentStory.get("dateTime")).get("$numberLong"));
+							int timeDiff = (int) ((currentTime-uploadTime)/100000);
+							uniqueUris.put(currentStory.toString(), (tvp.getViewCount()-timeDiff));
+
+						} else {
+							uniqueUris.put(currentStory.toString(),
+									uniqueUris.get(currentStory.toString()) + tvp.getViewCount());
 						}
 					}
 				}
 			}
 		}
-		//sort map by value, put json array
-		List<String> keys=new ArrayList<String>(uniqueUris.keySet());
-		List<Integer> values =new ArrayList<Integer>(uniqueUris.values());
+		// sort map by value, put json array
+		List<String> keys = new ArrayList<String>(uniqueUris.keySet());
+		List<Integer> values = new ArrayList<Integer>(uniqueUris.values());
 		Collections.sort(keys, Comparator.comparing(item -> values.indexOf(item)));
 		for (String j : keys) {
 			ja.put(new JSONObject(j));
 		}
 		p.clearLikes();
-		while(!tvps.isEmpty()) {
+		while (!tvps.isEmpty()) {
 			p.addLike(tvps.poll().get_id());
 		}
 		ps.updateProfile(p);
 		return ja;
+
 	}
+
 }

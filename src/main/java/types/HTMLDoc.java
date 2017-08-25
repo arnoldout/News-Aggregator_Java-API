@@ -13,6 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.shingle.ShingleFilter;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.util.Version;
@@ -61,18 +62,8 @@ public class HTMLDoc {
 			// strip text from website, unless timeout hit
 			doc = Jsoup.connect(url).timeout(10 * 1000).get();
 			String str = Jsoup.parse(doc.toString()).text();
-			//str = "Happiest Happy happy happier";
-//			str = stemTerm(str);
-//			str = stemTerm("happy");
-//			str = stemTerm("happier");
-//			str = stemTerm("happiest");
-//			str = stemTerm("strengthen");
-//			str = stemTerm("strength");
-//			str = stemTerm("hardest");
-//			str = stemTerm("hardy");
-//			str = stemTerm("hard");
+			
 			String[] arr = str.split(" ");
-
 			// loop through array of all words in html
 			for (String ss : arr) {
 				count.getAndIncrement();

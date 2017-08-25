@@ -28,7 +28,8 @@ public class Story {
 		this.title = title.getString();
 		this.description = desc.getString();
 		this.imgUri = imgUri.getString();
-		this._id = new ObjectId();
+		this._id = new ObjectId();	
+		//setting time of creation as the current datetime in long form
 		Calendar c = Calendar.getInstance();
 		this.setLdt(c.getTime().getTime());
 	} 

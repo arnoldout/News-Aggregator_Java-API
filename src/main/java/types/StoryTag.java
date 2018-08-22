@@ -6,7 +6,7 @@ import java.util.List;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
-public class ArticleTag {
+public class StoryTag {
 
 	//MongoID
 	private ObjectId _id;
@@ -15,13 +15,13 @@ public class ArticleTag {
 	//list of articles containing this tag
 	private List<ObjectId> articles;
 	
-	public ArticleTag(String name) {
+	public StoryTag(String name) {
 		super();
 		this._id = new ObjectId();
 		this.name = name;
 		this.articles = new ArrayList<ObjectId>();
 	}
-	public ArticleTag(Document d)
+	public StoryTag(Document d)
 	{
 		this._id = (ObjectId)d.get("_id");
 		this.name = (String) d.get("name");

@@ -25,7 +25,7 @@ import org.jsoup.nodes.Document;
  * It generates the most frequently occuring words on the page, and stores them
  */
 public class HTMLDoc {
-	public String url;
+	private String url;
 
 	
 	public String stemTerm(String text){
@@ -112,5 +112,13 @@ public class HTMLDoc {
 			}
 		}
 		return topEntries;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
 	}
 }

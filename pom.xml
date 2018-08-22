@@ -22,7 +22,13 @@
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-queryparser</artifactId>
 			<version>6.5.0</version>
+		</dependency><!-- https://mvnrepository.com/artifact/org.reflections/reflections -->
+		<dependency>
+			<groupId>org.reflections</groupId>
+			<artifactId>reflections</artifactId>
+			<version>0.9.10</version>
 		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/com.rometools/rome -->
 		<dependency>
 			<groupId>com.rometools</groupId>

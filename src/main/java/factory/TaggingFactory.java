@@ -21,7 +21,7 @@ import org.json.JSONObject;
 import com.google.gson.Gson;
 import com.mongodb.client.MongoCollection;
 
-import main.java.services.ArticleService;
+import main.java.services.StoryDBService;
 import main.java.services.GsonWrapper;
 import main.java.services.MongoConnection;
 import main.java.services.ProfileService;
@@ -40,7 +40,7 @@ public class TaggingFactory {
 	}
 
 	private TaggingService ts;
-	private ArticleService as;
+	private StoryDBService as;
 	private ProfileService ps;
 	private MongoConnection mc;
 
@@ -48,15 +48,11 @@ public class TaggingFactory {
 		super();
 		this.mc = mc;
 		this.ts = new TaggingService(mc);
-		this.as = new ArticleService(mc);
+		this.as = new StoryDBService(mc);
 		this.ps = new ProfileService(mc);
 	}
 
 	public void generateTags(Story story, Map<String, Queue<Story>> tags) {
-		// generate tags from article
-		// story now on mongo here
-		as.addArticle(story);
-
 		try {
 			for (String str : story.getCategories()) {
 				if (!tags.containsKey(str)) {

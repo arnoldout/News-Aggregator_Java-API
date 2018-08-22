@@ -1,27 +1,10 @@
 package main.java;
 
 import static com.mongodb.client.model.Filters.eq;
+import static main.java.constants.HerokuConstants.MONGO_CLIENT;
+import static main.java.constants.HerokuConstants.MONGO_DB;
 import static spark.Spark.get;
 import static spark.Spark.post;
-import static spark.SparkBase.port;
-
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Queue;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -31,147 +14,35 @@ import com.google.gson.Gson;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 
-import main.java.factory.NewsFactory;
 import main.java.factory.TaggingFactory;
-import main.java.services.ArticleService;
+import main.java.services.GarbageCollectionService;
 import main.java.services.GsonWrapper;
 import main.java.services.MongoConnection;
 import main.java.services.ProfileService;
-import main.java.services.TaggingService;
+import main.java.services.StoryDBService;
+import main.java.services.StoryProcessingService;
 import main.java.types.FrequentlyUsedWords;
-import main.java.types.HTMLDoc;
 import main.java.types.Profile;
-import main.java.types.Story;
-import main.java.types.XMLDoc;
+import spark.SparkBase;
 
 public class Main {
 
 	public static void main(String[] args) {
 		// for running locally, remove this port line
-		port(Integer.valueOf(System.getenv("PORT")));
+		SparkBase.port(Integer.valueOf(System.getenv("PORT")));
 
 		// mongo connection string
-		MongoConnection mc = new MongoConnection(
-				"mongodb://arnoldout111:mongopassword1@ds035026.mlab.com:35026/heroku_s4r2lcpf", "heroku_s4r2lcpf");
+		MongoConnection mc = new MongoConnection(MONGO_CLIENT, MONGO_DB);
 		ProfileService ps = new ProfileService(mc);
 
 		// used as blacklist when crawling pages
 		FrequentlyUsedWords fuw = new FrequentlyUsedWords();
 		fuw.generateWords();
 
-		Timer mongoGarbageCol = new Timer();
-		TimerTask mGC = new TimerTask() {
-			@Override
-			public void run() {
-				/*
-				 * clean up mongo every hour, half an hour after init running
-				 * main
-				 * 
-				 * remove any news articles that have been stored in mongo for
-				 * 12 hours
-				 */
-				GsonWrapper gw = new GsonWrapper();
-				Gson g = gw.getGson();
-				ArticleService as = new ArticleService(mc);
-				MongoCollection<Document> articles = as.getCollection("Article");
-				FindIterable<Document> docs = articles.find();
-				for (Document d : docs) {
-					Calendar now = Calendar.getInstance();
-					Long l = (Long) d.get("dateTime");
-					Date docDate = new Date(l);
-					Calendar docTime = Calendar.getInstance();
-					docTime.setTime(docDate);
-					docTime.add(Calendar.HOUR_OF_DAY, 12);
-					// check if date on article is 12 hours before present time
-					if (docTime.before(now)) {
-						// remove Article
-						Story st = g.fromJson(d.toJson(), Story.class);
-						as.removeArticle(st);
-					}
-				}
-			}
-		};
-		// start in half an hour, run every 1 hour
-		mongoGarbageCol.schedule(mGC, 1000 * 60 * 30, 1000 * 60 * 60);
+		// start garbage collection service
+		new GarbageCollectionService().startGC(mc);
 
-		Timer timer = new Timer();
-		TimerTask task = new TimerTask() {
-			@Override
-			public void run() {
-				/*
-				 * Every hour, check rss feeds for new content
-				 */
-				 try {
-					 URL obj = new URL("https://dailyfeed.herokuapp.com/Feed.zul");
-					 HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-						// optional default is GET
-						con.setRequestMethod("GET");
-						con.setRequestProperty("User-Agent", "Mozilla/5.0");
-
-						int responseCode = con.getResponseCode();
-						System.out.println("\nSending 'GET' request to URL : " + "https://dailyfeed.herokuapp.com/Feed.zul");
-						System.out.println("Response Code : " + responseCode);
-				    } catch (IOException exception) {
-				       System.out.println("No Ping");
-				    }
-				Set<String> articles = new HashSet<String>();
-				ArticleService as = new ArticleService(mc);
-				MongoCollection<Document> col = as.getCollection("Article");
-				FindIterable<Document> docs = col.find();
-				for (Document d : docs) {
-					// add uris to new articles
-					articles.add(d.getString("uri"));
-				}
-				Set<Story> storyCol = new HashSet<Story>();
-				NewsFactory nf = new NewsFactory();
-				nf.getDocs();
-				ExecutorService executor = Executors.newFixedThreadPool(70);
-				TaggingFactory tf = new TaggingFactory(mc);
-				// parse article bodies for keywords and tags
-				// check keywords against blacklist of frequently occuring
-				// english words
-				TaggingService ts = new TaggingService(mc);
-				Map<String, Queue<Story>> tags = new ConcurrentHashMap<String, Queue<Story>>();
-				FindIterable<Document> b = ts.getCollection("ArticleTag").find();
-				for (Document doc2 : b) {
-					tags.put((String) doc2.get("name"), new ArrayBlockingQueue<Story>(360));
-				}
-				System.out.println("Current Tags size:" + tags.size());
-				for (XMLDoc d : nf.getParsedDocs()) {
-					for (Story s : d.getNewsItems()) {
-						HTMLDoc doc = new HTMLDoc();
-						doc.url = s.getUri();
-						if (!(articles.contains(doc.url))) {
-							s.setCategories(doc.parseText(fuw.getFreqWords()));
-							storyCol.add(s);
-							tf.generateTags(s, tags);
-						}
-					}
-				}
-				System.out.println("Current Tags size:" + tags.size());
-
-				for (Entry<String, Queue<Story>> entry : tags.entrySet()) {
-					// get or add and get tag object
-					String key = entry.getKey();
-					Queue<Story> value = entry.getValue();
-					executor.submit(() -> {
-						while (!value.isEmpty()) {
-							ts.addStory(value.poll(), key);
-						}
-					});
-				}
-				System.out.println("DONE");
-				executor.shutdown();
-				try {
-					executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-				} catch (InterruptedException e) {
-					System.out.println("Thread Interrupted");
-				}
-				// all stories now categorized each hour with top three tags
-			}
-		};
-		// run task every hour
-		timer.schedule(task, 01, 1000 * 60 * 60);
+		new StoryProcessingService().startProcessor(mc, fuw);
 
 		// basic help response to a blank call to the webpage
 		get("/", (request, response) -> {
@@ -201,7 +72,7 @@ public class Main {
 		});
 		// get all available likes in mongo
 		get("/allLikes", (request, response) -> {
-			ArticleService as = new ArticleService(mc);
+			StoryDBService as = new StoryDBService(mc);
 			return as.getArticles();
 		});
 
@@ -287,8 +158,9 @@ public class Main {
 		});
 
 		/*
-		 * unimplemented post method post("/changePassword", (request, response)
-		 * -> { request.body(); return ""; });
+		 * unimplemented post method post("/changePassword", (request, response) -> {
+		 * request.body(); return ""; });
 		 */
 	}
+
 }

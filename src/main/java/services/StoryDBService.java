@@ -15,14 +15,15 @@ import com.mongodb.client.model.Filters;
 
 import main.java.types.Story;
 
-public class ArticleService extends MongoService{
+public class StoryDBService extends MongoService{
 private MongoCollection<Document> col;
 	
-	public ArticleService(MongoConnection mc)
+	public StoryDBService(MongoConnection mc)
 	{
 		super.setDb(mc.getDb());
 		col = super.getCollection("Article");
 	}
+	
 	public Boolean ifTagExists(String tagName)
 	{
 		if(getMongoDocument(tagName)==null)
